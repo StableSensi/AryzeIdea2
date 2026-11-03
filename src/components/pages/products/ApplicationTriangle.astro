@@ -1,0 +1,214 @@
+---
+/**
+ * "Choose the application" triangle on /products/pay-by-bank: an
+ * equilateral triangle cut into three linked pieces (Payment platforms on
+ * top, Merchant flows bottom-left, Institutional routes bottom-right) that
+ * interlock with round jigsaw tabs.
+ *
+ * Each piece is an <a> clipped by an SVG clipPath. Two tab sizes are
+ * generated: radius 20 for wide screens, radius 12 at <= 800px. Below a
+ * 30rem container width (or without clip-path url() support) the pieces
+ * fall back to three stacked plain blocks.
+ */
+const SIDE = 480;
+const H = (SIDE * Math.sqrt(3)) / 2; // triangle height
+const MID = H / 2; // horizontal cut between the top piece and the bottom pair
+const LOWER_MID = (MID + H) / 2; // centre of the vertical cut between the bottom pieces
+const CX = SIDE / 2;
+
+const paymentPath = (r: number) =>
+  `M ${CX} 0 L ${SIDE * 0.75} ${MID} L ${300 + r} ${MID} A ${r} ${r} 0 0 0 ${300 - r} ${MID} ` +
+  `L ${CX} ${MID} L ${180 + r} ${MID} A ${r} ${r} 0 0 0 ${180 - r} ${MID} L ${SIDE * 0.25} ${MID} Z`;
+
+const merchantPath = (r: number) =>
+  `M ${SIDE * 0.25} ${MID} L ${180 - r} ${MID} A ${r} ${r} 0 0 1 ${180 + r} ${MID} L ${CX} ${MID} ` +
+  `L ${CX} ${LOWER_MID - r} A ${r} ${r} 0 0 1 ${CX} ${LOWER_MID + r} L ${CX} ${H} L 0 ${H} Z`;
+
+const institutionPath = (r: number) =>
+  `M ${CX} ${MID} L ${300 - r} ${MID} A ${r} ${r} 0 0 1 ${300 + r} ${MID} L ${SIDE * 0.75} ${MID} ` +
+  `L ${SIDE} ${H} L ${CX} ${H} L ${CX} ${LOWER_MID + r} A ${r} ${r} 0 0 0 ${CX} ${LOWER_MID - r} L ${CX} ${MID} Z`;
+
+const RADII = [20, 12];
+
+const pieces = [
+  {
+    key: 'payment',
+    href: '/solutions/psps-fintechs',
+    label: ['Payment', 'platforms'],
+    path: paymentPath,
+    x: CX,
+    y: H * 0.34,
+  },
+  {
+    key: 'merchant',
+    href: '/solutions/psps-fintechs#merchant-flows',
+    label: ['Merchant', 'flows'],
+    path: merchantPath,
+    x: SIDE * 0.29,
+    y: H * 0.78,
+  },
+  {
+    key: 'institution',
+    href: '/solutions/banks-emis',
+    label: ['Institutional', 'routes'],
+    path: institutionPath,
+    x: SIDE - SIDE * 0.29,
+    y: H * 0.78,
+  },
+];
+---
+
+<div class="application-triangle">
+  <svg class="application-triangle__defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      {
+        RADII.map((r) =>
+          pieces.map((p) => (
+            <clipPath id={`application-${p.key}-${r}`} clipPathUnits="userSpaceOnUse">
+              <path d={p.path(r)} />
+            </clipPath>
+          )),
+        )
+      }
+    </defs>
+  </svg>
+  <div class="application-triangle__canvas">
+    {
+      pieces.map((p) => (
+        <a
+          class={`application-triangle__piece application-triangle__piece--${p.key}`}
+          href={p.href}
+          style={`--clip-large:url(#application-${p.key}-20);--clip-small:url(#application-${p.key}-12);--label-x:${p.x}px;--label-y:${p.y}px`}
+        >
+          {RADII.map((r) => (
+            <svg
+              class={`application-triangle__decoration application-triangle__decoration--${r}`}
+              width={SIDE}
+              height={H}
+              viewBox={`0 0 ${SIDE} ${H}`}
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path class="application-triangle__gutter" d={p.path(r)} />
+              <path class="application-triangle__focus-white" d={p.path(r)} />
+              <path class="application-triangle__focus-navy" d={p.path(r)} />
+            </svg>
+          ))}
+          <span class="application-triangle__label">
+            <span>{p.label[0]}</span> <span>{p.label[1]}</span>
+          </span>
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .application-triangle {
+    justify-self: center;
+    width: 100%;
+    min-width: 0;
+    max-width: 600px;
+    container-type: inline-size;
+  }
+  .application-triangle__defs {
+    pointer-events: none;
+    position: absolute;
+  }
+  .application-triangle__canvas {
+    gap: var(--connector-gutter);
+    display: grid;
+  }
+  .application-triangle__piece {
+    min-height: 44px;
+    font: inherit;
+    color: var(--text-inv);
+    background: var(--navy);
+    padding: 1.25rem 16px;
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.35;
+    text-decoration: none;
+    display: block;
+  }
+  .application-triangle__piece--merchant {
+    background: var(--cta);
+  }
+  .application-triangle__piece--institution {
+    color: var(--navy);
+    background: #dce5e5;
+  }
+  .application-triangle__piece:focus-visible {
+    outline: 3px solid var(--navy);
+    outline-offset: 3px;
+  }
+  .application-triangle__decoration {
+    pointer-events: none;
+    display: none;
+  }
+  @supports (clip-path: url("#application-payment-20")) {
+    @container (width>=30rem) {
+      .application-triangle__canvas {
+        width: 480px;
+        height: 415.692px;
+        margin-inline: auto;
+        display: block;
+        position: relative;
+      }
+      .application-triangle__piece {
+        clip-path: var(--clip-large);
+        padding: 0;
+        position: absolute;
+        inset: 0;
+      }
+      .application-triangle__label {
+        left: var(--label-x);
+        top: var(--label-y);
+        text-align: center;
+        white-space: nowrap;
+        position: absolute;
+        transform: translate(-50%, -50%);
+      }
+      .application-triangle__label > span,
+      .application-triangle__decoration--20 {
+        display: block;
+      }
+      .application-triangle__gutter {
+        fill: none;
+        stroke: var(--sand);
+        stroke-width: var(--connector-gutter);
+      }
+      .application-triangle__focus-white,
+      .application-triangle__focus-navy {
+        fill: none;
+        opacity: 0;
+      }
+      .application-triangle__focus-white {
+        stroke: #fff;
+        stroke-width: 12px;
+      }
+      .application-triangle__focus-navy {
+        stroke: var(--navy);
+        stroke-width: 8px;
+      }
+      .application-triangle__piece:focus-visible {
+        outline: none;
+      }
+      .application-triangle__piece:focus-visible .application-triangle__focus-white,
+      .application-triangle__piece:focus-visible .application-triangle__focus-navy {
+        opacity: 1;
+      }
+      @media (width<=800px) {
+        .application-triangle__piece {
+          clip-path: var(--clip-small);
+        }
+        .application-triangle__decoration--20 {
+          display: none;
+        }
+        .application-triangle__decoration--12 {
+          display: block;
+        }
+      }
+    }
+  }
+</style>

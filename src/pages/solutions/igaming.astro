@@ -1,0 +1,285 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import StatusChip from '../../components/StatusChip.astro';
+import Included from '../../components/product/Included.astro';
+import NotIncluded from '../../components/product/NotIncluded.astro';
+import { getProduct, type ChipTone } from '../../data/products';
+
+const payByBank = getProduct('pay-by-bank');
+const payByCrypto = getProduct('pay-by-crypto');
+const calculatorHref = `${payByBank.url}#calculator`;
+
+/** Hero status line (S1): one StatusChip per tier. Only pay-ins are live. */
+const tiers: { label: string; tone: ChipTone }[] = [
+  { label: 'Pay-ins live', tone: 'live' },
+  { label: 'Payouts pilot, per named operator', tone: 'neutral' },
+  { label: 'Crypto acceptance in build', tone: 'neutral' },
+  { label: 'Treasury layer concept', tone: 'neutral' },
+];
+
+const figures = [
+  { value: '2–4%', text: 'Chargeback rates in iGaming, against 0.5–⁠1% in e-⁠commerce.', source: 'Industry research' },
+  { value: '1.5%', text: 'Visa’s VAMP threshold, from April 2026.', source: 'Visa' },
+  { value: '75%+', text: 'The rise in scheme fees for large merchants since 2021.', source: 'Industry research' },
+];
+
+const cashier = [
+  {
+    title: 'Pay-ins',
+    text: 'Deposits and top-ups in the UK and the EU, on the Mastercard Open Banking platform, which reaches 2,900+ banks across 19 European markets. Bank depth varies by country and is confirmed per operator.',
+  },
+  { title: 'RememberMe', text: 'A 15-month token for repeat depositors, with about 50% fewer steps on each repeat deposit.' },
+  {
+    title: 'Account owner verification',
+    text: 'Account information, read with the player’s consent in the same bank session that moves the money, confirms who owns the paying account.',
+  },
+  { title: 'One fee per transaction', text: 'A deposit costs the same whatever its size. Pricing is confirmed per operator.' },
+  { title: 'Your cashier, your brand', text: 'Logo, colours and font carry through the payment screens.' },
+];
+
+/** S4 status rows. Pay-ins and crypto read their chips from the registry. */
+const statusRows: {
+  title: string;
+  text: string;
+  chip: { product: 'pay-by-bank' | 'pay-by-crypto' } | { label: string };
+  href?: string;
+}[] = [
+  { title: 'Pay-ins', text: 'Live in the UK and the EU.', chip: { product: 'pay-by-bank' } },
+  { title: 'Payouts', text: 'Pilot. Activated per named operator, not generally available.', chip: { label: 'Pilot' } },
+  {
+    title: 'Crypto acceptance',
+    text: payByCrypto.statusLine ?? '',
+    chip: { product: 'pay-by-crypto' },
+    href: payByCrypto.draft ? undefined : payByCrypto.url,
+  },
+  { title: 'Treasury layer', text: 'Concept. Not available today.', chip: { label: 'Concept' } },
+];
+
+const limits = [
+  { title: 'Payouts are in pilot, activated per named operator. They are not generally available.' },
+  { title: 'Standalone recurring payments are not offered.' },
+  { title: 'Account information is a data layer for verification. It is not an affordability product.' },
+];
+---
+
+<Base
+  title="For iGaming Operators — Aryze"
+  description="Aryze Payments for iGaming. Pay by Bank as the cashier, with deposits live in the UK and the EU. Payouts in pilot, crypto in build, treasury a concept."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Solutions · iGaming operators"
+    title="Aryze Payments for iGaming"
+    lede="One cashier in front. One treasury behind. One integration."
+    image={{
+      src: '/images/hero-visual.jpg',
+      alt: 'Copenhagen seen through trails of moving light',
+      position: '50% 50%',
+    }}
+    video="/videos/city-living-60fps.mp4"
+  >
+    <p class="igaming-hero-body">
+      The cashier is {payByBank.name}. Players deposit straight from their own bank, approve in the banking app they already use, and the money moves bank to bank, in the UK and the EU.
+    </p>
+    <div class="igaming-hero-chip">
+      <StatusChip product="pay-by-bank" />
+    </div>
+    <div class="btn-row igaming-hero-actions">
+      <a class="btn btn--primary" href={calculatorHref}>See the cost difference</a>
+      <a class="btn btn--ghost" href="/contact">Talk to Aryze</a>
+    </div>
+  </PageHero>
+
+  <section class="section section--tight igaming-status" aria-label="Status">
+    <div class="container">
+      <ul class="igaming-tiers">
+        {
+          tiers.map((t) => (
+            <li>
+              <StatusChip label={t.label} tone={t.tone} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="situation">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">The card bill in this vertical</span>
+        <h2>Chargebacks run higher in iGaming.</h2>
+        <p class="lede">On cards, any deposit can come back as a dispute.</p>
+      </div>
+      <div class="grid grid--3 igaming-figures">
+        {
+          figures.map((f) => (
+            <div class="tile igaming-figure">
+              <b>{f.value}</b>
+              <span>{f.text}</span>
+              <small>{f.source}</small>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <Included eyebrow="The cashier · Live" title="Take deposits bank to bank." body={`${payByBank.name} sits in front as the cashier. No card number is entered, and there is no card-scheme chargeback process. Bank-payment fraud, refund and dispute rules still apply.`} items={cashier} tone="card" id="cashier">
+    <div class="igaming-cashier-cta">
+      <a class="arrow-link" href={payByBank.url}>See {payByBank.name}</a>
+      <StatusChip product="pay-by-bank" />
+    </div>
+  </Included>
+
+  <section class="section" id="status">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">What is live, and what is not yet</span>
+        <h2>Every part, with its status.</h2>
+      </div>
+      <ul class="route-panel igaming-status-rows">
+        {
+          statusRows.map((r) => (
+            <li>
+              <strong>{r.href ? <a href={r.href} class="arrow-link">{r.title}</a> : r.title}</strong>
+              <span>{r.text}</span>
+              <div class="igaming-status-chip">
+                {'product' in r.chip ? <StatusChip product={r.chip.product} /> : <StatusChip label={r.chip.label} />}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--accent" id="treasury">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Concept · The second conversation</span>
+        <div class="igaming-concept-head">
+          <h2>The treasury layer is a concept today.</h2>
+          <StatusChip label="Concept" />
+        </div>
+        <p class="lede">
+          For operators running several entities, markets and currencies, a treasury layer behind the cashier is the second conversation, held with the CFO or Group Treasurer. The idea is one view of balances across markets and currencies, and one reconciliation feed.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <NotIncluded eyebrow="The limits" title="What the cashier does not do." items={limits} id="limits">
+    <details class="route-evidence">
+      <summary>How is {payByBank.name} regulated?</summary>
+      <p>
+        Payment initiation runs under a licensed partner’s roof and covers PIS and AIS across the UK and the EU.
+      </p>
+    </details>
+  </NotIncluded>
+
+  <CtaPanel
+    title="Run your own deposit numbers."
+    text="Enter your monthly deposits and average deposit in the calculator. The comparison is illustrative."
+    primary={{ label: 'See the cost difference', href: calculatorHref }}
+    secondary={{ label: 'Talk to Aryze', href: '/contact' }}
+  />
+</Base>
+
+<style>
+  .igaming-hero-body {
+    max-width: 34em;
+    color: var(--muted);
+    margin-top: 18px;
+  }
+  .igaming-hero-chip {
+    margin-top: 20px;
+  }
+  .igaming-hero-actions {
+    margin-top: 28px;
+  }
+  .igaming-status {
+    border-bottom: 1px solid var(--line-muted);
+    padding-block: 20px;
+  }
+  .igaming-tiers {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+  }
+  .igaming-figure b {
+    letter-spacing: -0.04em;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    font-weight: 400;
+  }
+  .igaming-figure small {
+    font: 0.625rem/1.6 var(--mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 12px;
+    display: block;
+  }
+  .igaming-cashier-cta {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 32px;
+    display: flex;
+  }
+  .igaming-status-rows {
+    margin: 0;
+    padding-block: 8px;
+    list-style: none;
+  }
+  .igaming-status-rows li {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr) 10rem;
+    align-items: center;
+    gap: 8px 24px;
+    padding: 18px 0;
+    display: grid;
+  }
+  .igaming-status-rows li + li {
+    border-top: 1px solid var(--line-muted);
+  }
+  .igaming-status-rows strong {
+    color: var(--navy);
+    font-weight: 600;
+  }
+  .igaming-status-rows strong .arrow-link {
+    font-size: inherit;
+    font-weight: 600;
+  }
+  .igaming-status-rows span {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+  .igaming-status-chip {
+    justify-self: end;
+  }
+  .igaming-concept-head {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    display: flex;
+  }
+  .igaming-concept-head h2 {
+    margin-bottom: 0;
+  }
+  .igaming-concept-head + .lede {
+    margin-top: 20px;
+  }
+  @media (width<=720px) {
+    .igaming-status-rows li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .igaming-status-chip {
+      justify-self: start;
+    }
+  }
+</style>

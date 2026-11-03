@@ -1,0 +1,123 @@
+---
+/**
+ * A plain bordered table in the route-panel style, for the copy's
+ * "who owns what" tables. Stacks each row into a labelled block at 640px.
+ * A two-column table is capped in width so short cells don't float in a
+ * full-width frame; row labels stay on one line above 640px.
+ */
+interface Props {
+  headers: string[];
+  rows: string[][];
+  caption?: string;
+}
+const { headers, rows, caption } = Astro.props;
+---
+
+<div class:list={['parts-table-wrap', headers.length === 2 && 'parts-table-wrap--narrow']}>
+  <table class="parts-table">
+    {caption && <caption class="sr-only">{caption}</caption>}
+    <thead>
+      <tr>{headers.map((h) => <th scope="col">{h}</th>)}</tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((r) => (
+          <tr>
+            {r.map((c, i) =>
+              i === 0 ? (
+                <th scope="row" data-label={headers[i]}>{c}</th>
+              ) : (
+                <td data-label={headers[i]}>{c}</td>
+              ),
+            )}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .sr-only {
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    overflow: hidden;
+  }
+  .parts-table-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    overflow: hidden;
+  }
+  .parts-table-wrap--narrow {
+    max-width: 760px;
+  }
+  .parts-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .parts-table th,
+  .parts-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 18px 28px;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+  .parts-table thead th {
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    font-size: 0.6875rem;
+    font-weight: 500;
+  }
+  .parts-table tbody th {
+    color: var(--navy);
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .parts-table td {
+    color: var(--muted);
+  }
+  .parts-table tbody tr + tr > * {
+    border-top: 1px solid var(--line-muted);
+  }
+  @media (width<=640px) {
+    .parts-table thead {
+      display: none;
+    }
+    .parts-table tr,
+    .parts-table th,
+    .parts-table td {
+      display: block;
+    }
+    .parts-table tbody tr {
+      padding: 16px 20px;
+    }
+    .parts-table tbody tr + tr {
+      border-top: 1px solid var(--line-muted);
+    }
+    .parts-table tbody tr + tr > * {
+      border-top: 0;
+    }
+    .parts-table th,
+    .parts-table td {
+      padding: 2px 0;
+    }
+    .parts-table tbody th {
+      white-space: normal;
+    }
+    .parts-table td:before {
+      content: attr(data-label) ' · ';
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.6875rem;
+    }
+  }
+</style>

@@ -1,0 +1,224 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import SolutionProducts from '../../components/SolutionProducts.astro';
+import TreasuryCaseRoute from '../../components/pages/solutions/TreasuryCaseRoute.astro';
+import { getProduct } from '../../data/products';
+
+const onChainFx = getProduct('on-chain-fx');
+
+const cases: { label: string; title: string; text: string; steps: [string, string, string] }[] = [
+  {
+    label: '01 · GROUP LIQUIDITY',
+    title: 'Intercompany funding',
+    text: 'Move money between entities, currencies and operating windows.',
+    steps: ['Group entity A', `${onChainFx.name} through MoneyOS`, 'Group entity B'],
+  },
+  {
+    label: '02 · EXTERNAL PAYMENT',
+    title: 'Recurring supplier settlement',
+    text: 'Improve one expensive or awkward cross-border corridor.',
+    steps: ['Treasury instruction', 'Configured settlement', 'Supplier bank money'],
+  },
+];
+
+const measures = [
+  { title: 'Cost', text: 'FX, fees, funding and operating work.' },
+  { title: 'Coverage', text: 'The currencies, corridors and hours the route reaches.' },
+  { title: 'Control', text: 'Approval, reconciliation and exceptions.' },
+];
+---
+
+<Base
+  title="For Corporate Treasury — Aryze"
+  description="Move money between group entities, or pay a supplier in its own currency. Start with one recurring intercompany or supplier flow."
+>
+  <PageHero
+    tone="sand"
+    eyebrow="Solutions · Corporate Treasury"
+    title="Move money between entities, currencies and suppliers."
+    lede="Start with one flow you repeat every month, between your own entities or out to a supplier."
+    image={{
+      src: '/images/solutions/commodity-no-lamp.webp',
+      alt: 'A treasury professional overlooking Copenhagen',
+      position: '50% 24%',
+    }}
+    video="/videos/treasury-living-60fps.mp4"
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Start with one repeat flow</span>
+        <h2>Known parties. Known currencies. A better route.</h2>
+      </div>
+      <div class="treasury-cases">
+        {
+          cases.map((c) => (
+            <article>
+              <span>{c.label}</span>
+              <h3>{c.title}</h3>
+              <p>{c.text}</p>
+              <TreasuryCaseRoute steps={c.steps} />
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">What Aryze adds</span>
+        <h2>The movement layer between your systems and destinations.</h2>
+        <p class="lede">MoneyOS coordinates FX conversion. The destination receives the form of money it needs.</p>
+        <p>
+          Aryze supplies the configured money-movement and orchestration layer. It is not a replacement TMS, cash-forecasting system, hedging desk or universal netting and cash-pooling product. Those systems and responsibilities remain part of the treasury design.
+        </p>
+      </div>
+      <div class="treasury-route">
+        <div><span>YOUR STACK</span><strong>ERP · TMS · Banks</strong></div>
+        <i aria-hidden="true">↓</i>
+        <div class="treasury-route--aryze"><span class="treasury-route-name">Aryze</span><strong>Coordinate · Convert · Settle</strong></div>
+        <i aria-hidden="true">↓</i>
+        <div><span>DESTINATION</span><strong>Entity · Supplier · Provider</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Build the business case</span>
+        <h2>Compare the whole flow.</h2>
+      </div>
+      <div class="route-grid">
+        {
+          measures.map((m) => (
+            <article class="route-panel">
+              <h3>{m.title}</h3>
+              <p>{m.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card" id="products">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Products</span>
+        <h2>The products behind the route.</h2>
+      </div>
+      <SolutionProducts products={['on-chain-fx', 'digital-cash']} />
+    </div>
+  </section>
+
+  <CtaPanel
+    title="Bring one recurring flow."
+    text="Tell us the payer, the recipient, the currencies and what goes wrong today. We test whether a better route exists."
+    primary={{ label: 'Discuss the flow', href: '/contact' }}
+    secondary={{ label: 'How MoneyOS fits', href: '/how-it-works' }}
+  />
+</Base>
+
+<style>
+  .treasury-cases {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    display: grid;
+  }
+  .treasury-cases > article {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    min-width: 0;
+    padding: clamp(28px, 4vw, 42px);
+  }
+  .treasury-cases > article > span {
+    font: 0.625rem var(--mono);
+    letter-spacing: 0.06em;
+    color: var(--cta);
+  }
+  .treasury-cases h3 {
+    margin-top: 30px;
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-weight: 400;
+  }
+  .treasury-cases p {
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .treasury-route {
+    justify-items: stretch;
+    gap: 8px;
+    display: grid;
+  }
+  .treasury-route > div {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 10px;
+    padding: 22px;
+  }
+  .treasury-route span {
+    font: 0.5625rem var(--mono);
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 7px;
+    display: block;
+  }
+  .treasury-route strong {
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+  .treasury-route i {
+    text-align: center;
+    color: var(--cta);
+    font-style: normal;
+  }
+  .treasury-route .treasury-route--aryze {
+    background: var(--navy);
+    color: var(--text-inv);
+    border-color: var(--navy);
+  }
+  .treasury-route--aryze span {
+    color: var(--blue);
+  }
+  .treasury-route .treasury-route-name {
+    text-transform: uppercase;
+  }
+  .treasury-measures {
+    grid-template-columns: 1fr 1.4fr;
+    gap: clamp(40px, 7vw, 96px);
+    display: grid;
+  }
+  .treasury-measure-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    display: grid;
+  }
+  .treasury-measure-grid article {
+    background: var(--card);
+    border: 1px solid var(--sand-2);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .treasury-measure-grid strong {
+    font-size: 1.3rem;
+    font-weight: 500;
+    display: block;
+  }
+  .treasury-measure-grid span {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  @media (width<=800px) {
+    .treasury-cases,
+    .treasury-measures {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

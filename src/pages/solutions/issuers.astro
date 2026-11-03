@@ -1,0 +1,324 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import SolutionProducts from '../../components/SolutionProducts.astro';
+import { getProduct } from '../../data/products';
+
+const digitalCash = getProduct('digital-cash');
+const onChainFx = getProduct('on-chain-fx');
+
+const paths = [
+  {
+    modifier: 'issue',
+    label: '01 · I NEED TO ISSUE',
+    title: 'Create the money your network needs.',
+    text: 'Backed, branded units created for funded demand.',
+    href: digitalCash.url,
+    link: 'Explore issuance',
+  },
+  {
+    modifier: 'extend',
+    label: '02 · I ALREADY ISSUE',
+    title: 'Build on the money you already issue.',
+    text: 'Add conversion, networks, payments and redemption.',
+    href: onChainFx.url,
+    link: `Explore ${onChainFx.name}`,
+  },
+];
+
+const lifecycle = [
+  { title: 'Fund', text: 'Establish eligible backing or transaction funding under the agreed arrangement.' },
+  { title: 'Issue on demand', text: 'Create the units needed for the defined payment or settlement purpose.' },
+  { title: 'Connect and use', text: 'MoneyOS coordinates FX conversion, movement and use of the units.' },
+  { title: 'Redeem', text: 'Return value to the required bank or supported digital-asset destination.' },
+];
+
+const applications = [
+  {
+    title: 'Tokenised deposits',
+    text: 'A digital representation of a deposit claim on the issuing bank, under the applicable legal and regulatory arrangement.',
+  },
+  { title: 'Payment tokens', text: 'Branded units designed to move through a selected payment network.' },
+  { title: 'Settlement units', text: 'Purpose-built money for consortium, network or intercompany value movement.' },
+];
+
+const nn = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<Base
+  title="For Stablecoin & Token Issuers — Aryze"
+  description="Issue digital cash, or move the money you already issue across currencies and networks. Aryze connects the steps from funding to redemption."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Solutions · Stablecoin & Token Issuers"
+    title="Issue digital cash, or move the money you already issue across currencies and networks."
+    lede="Either way, Aryze connects the steps from funding to redemption."
+    image={{
+      src: '/images/map-flow.webp',
+      alt: 'Two colleagues reviewing a plan in a Copenhagen meeting room',
+      position: '50% 50%',
+    }}
+    video="/videos/collaboration-living-60fps.mp4"
+  />
+
+  <section class="section">
+    <div class="container issuer-paths">
+      {
+        paths.map((p) => (
+          <article class={`issuer-path issuer-path--${p.modifier}`}>
+            <i class="issuer-orbit" aria-hidden="true"><b></b><b></b></i><span>{p.label}</span>
+            <h2>{p.title}</h2>
+            <p>{p.text}</p>
+            <a class="arrow-link" href={p.href}>{p.link}</a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">The complete lifecycle</span>
+        <h2>Issuance is the beginning.</h2>
+      </div>
+      <ol class="route-flow route-flow--active" aria-label="Digital cash lifecycle">
+        {
+          lifecycle.map((s, i) => (
+            <li>
+              <span class="route-number">{nn(i)}</span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="container issuer-applications">
+      <div>
+        <span class="eyebrow">Designed for institutional use</span>
+        <h2>One issuance layer. More than one kind of money.</h2>
+      </div>
+      <div class="issuer-app-grid">
+        {
+          applications.map((a, i) => (
+            <article>
+              <span>{nn(i)}</span>
+              <h3>{a.title}</h3>
+              <p>{a.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="products">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Products</span>
+        <h2>Pick the step you need.</h2>
+      </div>
+      <SolutionProducts products={['digital-cash', 'on-chain-fx', 'tokenization', 'real-world-assets']} />
+      <a class="arrow-link issuer-backing" href="/trust/reserves">How the backing works</a>
+    </div>
+  </section>
+
+  <CtaPanel
+    title="Where does your money need to go?"
+    text="Bring the instrument and the destination. We map the lifecycle with you."
+    primary={{ label: 'Discuss your issuance', href: '/contact' }}
+    secondary={{ label: 'How MoneyOS fits', href: '/how-it-works' }}
+  />
+</Base>
+
+<style>
+  .issuer-backing {
+    margin-top: 28px;
+    display: inline-block;
+  }
+  .issuer-paths {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    display: grid;
+  }
+  .issuer-path {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    min-height: 420px;
+    padding: clamp(28px, 5vw, 52px);
+    display: flex;
+    position: relative;
+    overflow: hidden;
+  }
+  .issuer-path:before {
+    content: "";
+    border: 2px solid var(--line);
+    border-top-color: #00759999;
+    border-bottom-color: #00759938;
+    border-radius: 50%;
+    width: 240px;
+    height: 240px;
+    animation: 16s linear infinite issuer-orbit;
+    position: absolute;
+    top: -90px;
+    right: -70px;
+    box-shadow:
+      0 0 0 34px #bfd9ef33,
+      0 0 0 68px #bfd9ef1f;
+  }
+  .issuer-orbit {
+    pointer-events: none;
+    width: 244px;
+    height: 244px;
+    position: absolute;
+    top: -90px;
+    right: -70px;
+  }
+  .issuer-orbit b {
+    border: 2px solid #0000;
+    border-top-color: var(--arc);
+    border-bottom-color: var(--arc-soft);
+    --arc: #00759980;
+    --arc-soft: #0075992e;
+    border-radius: 50%;
+    position: absolute;
+  }
+  .issuer-orbit b:first-child {
+    animation: 24s linear infinite reverse issuer-orbit;
+    inset: -34px;
+  }
+  .issuer-orbit b:nth-child(2) {
+    --arc: #00759961;
+    --arc-soft: #00759924;
+    animation: 34s linear infinite issuer-orbit;
+    inset: -68px;
+  }
+  .issuer-path--extend .issuer-orbit b {
+    --arc: #00afe7ad;
+    --arc-soft: #00afe73d;
+    animation-direction: normal;
+  }
+  .issuer-path--extend .issuer-orbit b:nth-child(2) {
+    --arc: #00afe780;
+    --arc-soft: #00afe72e;
+    animation-direction: reverse;
+  }
+  .issuer-path--extend {
+    background: var(--navy);
+    color: var(--text-inv);
+    border-color: var(--navy);
+  }
+  .issuer-path--extend:before {
+    border-color: var(--line-inv);
+    border-top-color: #00afe7bf;
+    border-bottom-color: #00afe747;
+    animation-direction: reverse;
+    box-shadow:
+      0 0 0 34px #00afe714,
+      0 0 0 68px #00afe70d;
+  }
+  .issuer-path > span {
+    font: 0.625rem var(--mono);
+    letter-spacing: 0.06em;
+    color: var(--cta);
+    position: absolute;
+    top: 30px;
+    left: clamp(28px, 5vw, 52px);
+  }
+  .issuer-path--extend > span {
+    color: var(--blue);
+  }
+  .issuer-path h2 {
+    max-width: 11em;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    position: relative;
+  }
+  .issuer-path--extend h2 {
+    color: var(--text-inv);
+  }
+  .issuer-path p {
+    max-width: 35em;
+    color: var(--muted);
+    line-height: 1.7;
+    position: relative;
+  }
+  .issuer-path--extend p {
+    color: var(--muted-inv);
+  }
+  .issuer-path--extend .arrow-link {
+    color: var(--blue);
+  }
+  .issuer-list {
+    gap: 12px;
+    margin: 0;
+    list-style: none;
+    display: grid;
+  }
+  .issuer-list li {
+    color: var(--muted);
+    padding-left: 24px;
+    font-size: 0.875rem;
+    position: relative;
+  }
+  .issuer-list li:before {
+    content: "↗";
+    color: var(--cta);
+    position: absolute;
+    left: 0;
+  }
+  .issuer-applications {
+    grid-template-columns: 1fr 1.6fr;
+    gap: clamp(40px, 7vw, 96px);
+    display: grid;
+  }
+  .issuer-app-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    display: grid;
+  }
+  .issuer-app-grid article {
+    border-top: 1px solid var(--line-inv);
+    padding-top: 22px;
+  }
+  .issuer-app-grid span {
+    font: 0.625rem var(--mono);
+    color: var(--blue);
+  }
+  .issuer-app-grid h3 {
+    color: var(--text-inv);
+    margin-top: 24px;
+    font-size: 1rem;
+  }
+  .issuer-app-grid p {
+    color: var(--muted-inv);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  @media (width<=800px) {
+    .issuer-paths {
+      grid-template-columns: 1fr;
+    }
+    .issuer-path {
+      min-height: 360px;
+    }
+    .issuer-applications,
+    .issuer-app-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @keyframes issuer-orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

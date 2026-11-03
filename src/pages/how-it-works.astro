@@ -1,0 +1,466 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaPanel from '../components/CtaPanel.astro';
+import SettlementFlow from '../components/SettlementFlow.astro';
+import StatusChip from '../components/StatusChip.astro';
+import { productGroups, products } from '../data/products';
+import { solutions } from '../data/solutions';
+
+const lifecycle = [
+  { title: 'Connect', text: 'Receive the instruction.' },
+  { title: 'Issue if needed', text: 'Create only what the route needs.' },
+  { title: 'Convert', text: 'Convert into the currency or token the route needs.' },
+  { title: 'Settle', text: 'Return one reconciled result.' },
+];
+
+/** S3: drafts are hidden by the registry; the count shows only when every product is visible. */
+const groups = productGroups();
+const allVisible = products.every((p) => !p.draft);
+const pathHeading = allVisible ? 'Eight products. One path for the money.' : 'One path for the money.';
+
+/** S6: five entry points, from the solutions registry. */
+const numberWords = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'];
+const waysIn = `The same foundation. ${numberWords[solutions.length] ?? solutions.length} ways in.`;
+
+const evidenceSteps = ['Funding observed', 'Units issued', 'EUR burned / GBP minted', 'Redeemed and reconciled'];
+
+const ARBISCAN = 'https://sepolia.arbiscan.io/tx/';
+const transactions = [
+  { label: 'EUR issuance', hash: '0x8ed291afa9bc57c772ee5cb6bb8ec46e2284143b6ab448d7e4bd28825631ed93' },
+  {
+    label: 'Atomic EUR → GBP conversion',
+    hash: '0x49fa78ef3d4132de9016e10d4373ec95c6f9caabfd85564585ab77356d49426c',
+  },
+  { label: 'GBP redemption burn', hash: '0xe7cef4b808350f032dbec9386be71e6e29fdd4e40f87e0e4db795a64b025163a' },
+];
+const records = [
+  { label: 'Root instruction', value: '0xe144751ce15a04c247b2cabd6bdf9d0739e3c47abd7c338b038297712b679e16' },
+  { label: 'Recorded receipt · SHA-256', value: '818612401f51a9ca14f2919913df10b1faf4ce49ebf8eb0cf08feedb3fe17dd5' },
+];
+---
+
+<Base
+  title="How it works — MoneyOS — Aryze"
+  description="MoneyOS is the infrastructure under every Aryze product. You send one instruction. MoneyOS runs it across the providers your route needs and records each step."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Platform · MoneyOS"
+    title="How MoneyOS moves money."
+    lede="You send one instruction. MoneyOS runs it across the providers your route needs and records each step."
+    image={{ src: '/images/hero-visual.jpg', alt: 'Copenhagen streets connected by light trails', position: '50% 58%' }}
+    video="/videos/city-living-60fps.mp4"
+  />
+
+  <section class="section" id="architecture">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">One connected lifecycle</span>
+        <h2>From one instruction to settled money.</h2>
+      </div>
+      <ol class="route-flow route-flow--active" aria-label="Configured money movement lifecycle">
+        {
+          lifecycle.map((step, i) => (
+            <li>
+              <span class="route-number">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <details class="route-evidence">
+        <summary>Does every route use every step?</summary>
+        <p>
+          No. A Pay by Bank checkout need not issue tokens; an issuer-to-issuer connection may not need a bank entry.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <section class="section section--card" id="products">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Every product runs on MoneyOS</span>
+        <h2>{pathHeading}</h2>
+        <p class="lede">Each product sits under Accept, Issue or Convert &amp; settle. Find where your money is, then the product.</p>
+      </div>
+      <div class="path-steps">
+        {
+          groups.map((g) => (
+            <div class="path-step" id={`step-${g.id}`}>
+              <h3 class="path-step__label">
+                <span class="mono">{g.number}</span> {g.label}
+              </h3>
+              <ul>
+                {g.products.map((p) => (
+                  <li>
+                    <a href={p.url}>
+                      <span class="path-step__name">{p.name}</span>
+                      <StatusChip product={p.slug} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="moneyos">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">MoneyOS orchestration</span>
+        <h2>Follow the money.<br />See what needs attention.</h2>
+        <p class="lede">
+          Track progress, handle exceptions and reconcile the result across the providers in your route.
+        </p>
+        <details class="route-evidence">
+          <summary>Who does what?</summary>
+          <p>
+            Aryze configures and manages the agreed service. MoneyOS coordinates instructions, status and records.
+            Aryze Core modules and selected providers carry out the individual steps.
+          </p>
+          <p>
+            Regulated steps, such as banking, liquidity and custody, are carried out by an authorised party. Your institution signs off the approvals assigned to it.
+          </p>
+        </details>
+      </div>
+      <div class="orchestration-panel">
+        <SettlementFlow />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card" id="configurations">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Different entry points</span>
+        <h2>{waysIn}</h2>
+      </div>
+      <div class="route-grid entry-grid">
+        {
+          solutions.map((c) => (
+            <a class="route-panel" href={c.url}>
+              <h3>
+                {c.name} <span aria-hidden="true">↗</span>
+              </h3>
+              <p>{c.shortLine}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sand" id="evidence">
+    <div class="container evidence-layout">
+      <div>
+        <span class="eyebrow">Recorded evidence</span>
+        <h2>A connected route, recorded in a sandbox.</h2>
+        <p class="lede">Funding, issuance, conversion, redemption and payout under one instruction.</p>
+      </div>
+      <div class="evidence-card">
+        <div class="evidence-meta">
+          <span>5 August 2026</span>
+          <span>Bank sandbox + Arbitrum Sepolia</span>
+        </div>
+        <p class="route-note evidence-scope">
+          Historical sandbox demonstration on a separate implementation — not a live, end-to-end MoneyOS bank route.
+        </p>
+        <div class="route-amounts" role="group" aria-label="Recorded example: €5.00 converted to £4.27">
+          <div>
+            <strong>€5.00</strong>
+            <span>EUR input</span>
+          </div>
+          <span class="route-arrow" aria-hidden="true">→</span>
+          <div>
+            <strong>£4.27</strong>
+            <span>GBP output</span>
+          </div>
+        </div>
+        <ol class="evidence-steps">
+          {evidenceSteps.map((step) => <li>{step}</li>)}
+        </ol>
+        <details class="route-evidence">
+          <summary>Technical record and environment</summary>
+          <p>
+            This historical demonstration used simulated bank balances and public-testnet contract execution. It
+            demonstrates the mechanism and integration pattern, not current FX pricing or a production bank corridor.
+          </p>
+          <p>
+            The demonstration runs on a separate implementation from the consolidated MoneyOS platform, which is still
+            being integrated. It is not evidence of an end-to-end route through that platform. Each customer route
+            needs its own integration and production acceptance.
+          </p>
+          <dl>
+            {
+              transactions.map((t) => (
+                <>
+                  <dt>{t.label}</dt>
+                  <dd>
+                    <a href={ARBISCAN + t.hash} target="_blank" rel="noopener noreferrer">
+                      <code>{t.hash}</code>
+                      <span> · View transaction ↗</span>
+                    </a>
+                  </dd>
+                </>
+              ))
+            }
+            {
+              records.map((r) => (
+                <>
+                  <dt>{r.label}</dt>
+                  <dd>
+                    <code>{r.value}</code>
+                  </dd>
+                </>
+              ))
+            }
+          </dl>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <CtaPanel
+    title="Start with one route."
+    text="Tell us where the money needs to land and what you run today."
+    primary={{ label: 'Discuss your route', href: '/consulting' }}
+    secondary={{ label: 'Talk to Aryze', href: '/contact' }}
+  />
+</Base>
+
+<style>
+  .orchestration-panel {
+    align-self: center;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .path-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    display: grid;
+  }
+
+  .path-step {
+    border-top: 1px solid var(--line);
+    min-width: 0;
+    padding-top: 20px;
+  }
+
+  .path-step__label {
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 12px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .path-step__label .mono {
+    color: var(--cta);
+    margin-right: 6px;
+  }
+
+  .path-step ul {
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+
+  .path-step a {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--navy);
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 16px 18px;
+    text-decoration: none;
+    display: flex;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .path-step a:hover {
+    border-color: var(--cta);
+  }
+
+  .path-step__name {
+    font-weight: 500;
+  }
+
+  a.route-panel {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a.route-panel:hover {
+    border-color: var(--cta);
+  }
+
+  @media (width <= 900px) {
+    .path-steps,
+    .entry-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* The short text column sits centred against the taller evidence card. */
+  .evidence-layout {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    align-items: center;
+    gap: clamp(40px, 7vw, 96px);
+    display: grid;
+  }
+
+  .evidence-card {
+    background: var(--card);
+    border: 1px solid var(--sand-2);
+    border-radius: 18px;
+    padding: clamp(24px, 4vw, 40px);
+    box-shadow: 0 18px 50px #001e2b14;
+  }
+
+  .evidence-meta {
+    font: 0.625rem var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    justify-content: space-between;
+    gap: 16px;
+    display: flex;
+  }
+
+  .evidence-steps {
+    border-block: 1px solid var(--line-muted);
+    grid-template-columns: repeat(4, 1fr);
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+
+  .evidence-steps li {
+    text-align: center;
+    padding: 14px 10px;
+    font-size: 0.6875rem;
+  }
+
+  .evidence-steps li + li {
+    border-left: 1px solid var(--line-muted);
+  }
+
+  @media (width <= 880px) {
+    .path-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    display: grid;
+  }
+
+  .path-step {
+    border-top: 1px solid var(--line);
+    min-width: 0;
+    padding-top: 20px;
+  }
+
+  .path-step__label {
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 12px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .path-step__label .mono {
+    color: var(--cta);
+    margin-right: 6px;
+  }
+
+  .path-step ul {
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+
+  .path-step a {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--navy);
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 16px 18px;
+    text-decoration: none;
+    display: flex;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .path-step a:hover {
+    border-color: var(--cta);
+  }
+
+  .path-step__name {
+    font-weight: 500;
+  }
+
+  a.route-panel {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a.route-panel:hover {
+    border-color: var(--cta);
+  }
+
+  @media (width <= 900px) {
+    .path-steps,
+    .entry-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .evidence-layout {
+      grid-template-columns: 1fr;
+    }
+    .evidence-steps {
+      grid-template-columns: 1fr 1fr;
+    }
+    .evidence-steps li:nth-child(3) {
+      border-left: 0;
+    }
+    .evidence-steps li:nth-child(n + 3) {
+      border-top: 1px solid var(--line-muted);
+    }
+  }
+
+  /* Five entry cards: drop the three-card tints set in global.css so all five match. */
+  .entry-grid > .route-panel:nth-child(n) {
+    background: var(--card);
+    border-color: var(--line);
+  }
+
+  .entry-grid > .route-panel:nth-child(n):hover {
+    border-color: var(--cta);
+  }
+
+  @media (width <= 480px) {
+    .evidence-meta {
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+</style>

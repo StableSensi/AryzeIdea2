@@ -1,0 +1,314 @@
+---
+/**
+ * Home "What is your missing piece?" selector.
+ *
+ * Desktop (801px+): three radio buttons; CSS :has() shows one detailed panel
+ * and diagram at a time (no script). Without :has() support every panel shows.
+ * Mobile (800px and below): the same routes as a plain ordered list.
+ */
+import RouteBankFit from './RouteBankFit.astro';
+
+const routes = [
+  {
+    value: 'bank',
+    label: 'A capability customers want',
+    eyebrow: 'Your customer. Your accounts. Your core.',
+    need: 'The next financial service should still come from you.',
+    text: 'Add the next payment or smart-money capability around the banking experience your customer already knows.',
+    href: '/solutions/banks-emis',
+    link: 'Explore Banks & EMIs',
+    steps: null,
+  },
+  {
+    value: 'payments',
+    label: 'A new payment route',
+    eyebrow: 'Your checkout. Your merchant relationship.',
+    need: 'Your merchants need a payment type or market you do not yet cover.',
+    text: 'Aryze connects the missing provider and makes the resulting route part of a reusable payment ecosystem.',
+    href: '/solutions/psps-fintechs',
+    link: 'Explore payment platforms',
+    steps: ['Merchant need', 'Selected provider', 'MoneyOS orchestration', 'Your product experience'],
+  },
+  {
+    value: 'issuer',
+    label: 'Smarter issued money',
+    eyebrow: 'Your identity. Your backing. Your holder relationship.',
+    need: 'Issue digital cash—or make the money you already issue work further.',
+    text: 'Aryze’s issuance technology creates the instrument; MoneyOS coordinates FX conversion and payment utility.',
+    href: '/solutions/issuers',
+    link: 'Explore issuer solutions',
+    steps: ['Fund or back', 'Issue on demand', 'Connect and use', 'Redeem'],
+  },
+];
+
+const note = 'Illustrative configuration. Connections, funding and responsibilities are agreed for your route.';
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<div class="route-selector">
+  <!-- Desktop (801px+): one selector, one detailed panel and diagram at a time. -->
+  <div class="route-desktop">
+    <fieldset>
+      <legend>What is your missing piece?</legend>
+      <div class="choice-row">
+        {
+          routes.map((r, i) => (
+            <label>
+              <input type="radio" name="route-choice" value={r.value} checked={i === 0} />
+              <span>{r.label}<b aria-hidden="true">↗</b></span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+    {
+      routes.map((r) => (
+        <div class={`route-choice choice-${r.value}`}>
+          <div class="choice-intro">
+            <p class="eyebrow">{r.eyebrow}</p>
+            <h3>{r.need}</h3>
+            <p>{r.text}</p>
+            <a class="arrow-link" href={r.href}>{r.link}</a>
+          </div>
+          <div class="choice-diagram">
+            {r.steps ? (
+              <ol aria-label={r.label}>
+                {r.steps.map((step, i) => (
+                  <li>
+                    <span>{pad(i + 1)}</span>
+                    <strong>{step}</strong>
+                    {i < r.steps.length - 1 && <b aria-hidden="true">↓</b>}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <RouteBankFit label={r.label} />
+            )}
+            <p>{note}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+  <!-- Mobile (800px and below): the same routes as three short sections in reading order. No switching, no diagrams. -->
+  <div class="route-list">
+    <h2>What is your missing piece?</h2>
+    <ol>
+      {
+        routes.map((r, i) => (
+          <li class={`route-item route-item-${r.value}`}>
+            <span class="route-index" aria-hidden="true">{pad(i + 1)}</span>
+            <div>
+              <h3>{r.label}</h3>
+              <p class="route-need">{r.need}</p>
+              <p class="route-text">{r.text}</p>
+              <a class="arrow-link" href={r.href}>{r.link}</a>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</div>
+
+<style>
+  fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  legend {
+    letter-spacing: -0.025em;
+    margin-bottom: 28px;
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    font-weight: 400;
+  }
+
+  .choice-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    display: grid;
+  }
+
+  .choice-row label {
+    cursor: pointer;
+    position: relative;
+  }
+
+  .choice-row input {
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    position: absolute;
+  }
+
+  .choice-row label > span {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 4px;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 18px 20px;
+    font-size: 0.875rem;
+    display: flex;
+  }
+
+  .choice-row b {
+    font-weight: 400;
+  }
+
+  .choice-row input:checked + span {
+    background: var(--navy);
+    color: var(--text-inv);
+    border-color: var(--navy);
+  }
+
+  .choice-row input:focus-visible + span {
+    outline: 3px solid var(--cta);
+    outline-offset: 4px;
+  }
+
+  .route-choice {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 80px;
+    padding-top: 48px;
+    display: none;
+  }
+
+  .route-selector:has(input[value="bank"]:checked) .choice-bank,
+  .route-selector:has(input[value="payments"]:checked) .choice-payments,
+  .route-selector:has(input[value="issuer"]:checked) .choice-issuer {
+    display: grid;
+  }
+
+  .choice-intro h3 {
+    max-width: 16em;
+    font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+    font-weight: 400;
+  }
+
+  .choice-intro > p:not(.eyebrow) {
+    color: var(--muted);
+    max-width: 34em;
+    margin: 22px 0;
+    line-height: 1.7;
+  }
+
+  .choice-diagram ol {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    list-style: none;
+    display: grid;
+  }
+
+  .choice-diagram li {
+    border: 1px solid var(--sand-2);
+    background: var(--sand);
+    border-radius: 4px;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 116px;
+    padding: 20px;
+    display: flex;
+    position: relative;
+  }
+
+  .choice-diagram li:nth-child(2),
+  .choice-diagram li:nth-child(3) {
+    background: var(--navy);
+    color: var(--text-inv);
+    border-color: var(--navy);
+  }
+
+  .choice-diagram li span {
+    font: 0.625rem var(--mono);
+    opacity: 0.7;
+  }
+
+  .choice-diagram strong {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .choice-diagram b {
+    display: none;
+  }
+
+  .choice-diagram > p {
+    color: var(--muted);
+    max-width: 37em;
+    margin-top: 18px;
+    font-size: 0.6875rem;
+    line-height: 1.6;
+  }
+
+  @supports not selector(:has(*)) {
+    .route-choice {
+      display: grid;
+    }
+    .choice-row {
+      display: none;
+    }
+  }
+
+  .route-list {
+    display: none;
+  }
+
+  .route-list h2 {
+    margin-bottom: 20px;
+  }
+
+  .route-list ol {
+    border-bottom: 1px solid var(--line);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .route-item {
+    border-top: 1px solid var(--line);
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 12px;
+    padding: 24px 0;
+    display: grid;
+  }
+
+  .route-index {
+    font: 0.6875rem var(--mono);
+    color: var(--cta);
+    padding-top: 7px;
+  }
+
+  .route-item h3 {
+    margin: 0 0 10px;
+    font-size: 1.25rem;
+    font-weight: 400;
+  }
+
+  .route-need {
+    color: var(--navy);
+    max-width: 34em;
+    margin: 0 0 8px;
+    line-height: 1.5;
+  }
+
+  .route-text {
+    color: var(--muted);
+    max-width: 38em;
+    margin: 0 0 14px;
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  @media (width <= 800px) {
+    .route-desktop {
+      display: none;
+    }
+    .route-list {
+      display: block;
+    }
+  }
+</style>

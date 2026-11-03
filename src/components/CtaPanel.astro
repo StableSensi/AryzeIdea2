@@ -1,0 +1,83 @@
+---
+/**
+ * Closing navy call-to-action panel (section.section--tight > .cta-panel)
+ * with a heading, a short paragraph, a primary and a ghost button.
+ */
+interface Link {
+  label: string;
+  href: string;
+}
+interface Props {
+  /** Optional eyebrow above the heading. */
+  eyebrow?: string;
+  title: string;
+  text?: string;
+  /** Primary button. Default: "Talk to Aryze" → /contact. */
+  primary?: Link;
+  /** Ghost button. Default: "How it works" → /how-it-works. Pass null to omit it. */
+  secondary?: Link | null;
+}
+const {
+  eyebrow,
+  title,
+  text,
+  primary = { label: 'Talk to Aryze', href: '/contact' },
+  secondary = { label: 'How it works', href: '/how-it-works' },
+} = Astro.props;
+---
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="cta-panel">
+      <div>
+        {eyebrow && <span class="eyebrow cta-eyebrow">{eyebrow}</span>}
+        <h2>{title}</h2>
+        {text && <p>{text}</p>}
+      </div>
+      <div class="btn-row">
+        <a href={primary.href} class="btn btn--primary btn--lg">{primary.label}</a>
+        {secondary && <a href={secondary.href} class="btn btn--ghost btn--lg cta-ghost">{secondary.label}</a>}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-panel {
+    background: var(--navy);
+    color: var(--text-inv);
+    border-radius: var(--radius-xl);
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 32px;
+    padding: clamp(36px, 5vw, 64px);
+    display: grid;
+  }
+  .cta-panel h2 {
+    color: var(--text-inv);
+    margin-bottom: 8px;
+  }
+  .cta-panel p {
+    color: var(--muted-inv);
+    max-width: 38em;
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  .cta-eyebrow {
+    color: var(--muted-inv);
+  }
+  .cta-ghost {
+    color: var(--text-inv);
+    border-color: #f3f2f14d;
+  }
+  .cta-ghost:hover {
+    border-color: var(--text-inv);
+    color: var(--text-inv);
+  }
+  @media (width<=880px) {
+    .cta-panel {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

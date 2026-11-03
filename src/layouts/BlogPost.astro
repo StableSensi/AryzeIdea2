@@ -1,0 +1,144 @@
+---
+/**
+ * Blog article page: Base layout + sand post hero (category chip, date,
+ * reading time, h1, lede), the article body (default slot, rendered as
+ * .prose.post-body — plain HTML/Markdown, styled by unscoped descendant rules),
+ * the "Related product" aside and the "Originally published on" source line.
+ *
+ * <title> becomes "{title} — Aryze Blog" and the lede doubles as meta description,
+ * unless metaTitle / metaDescription are given.
+ */
+import Base from './Base.astro';
+import StatusChip from '../components/StatusChip.astro';
+import { getProduct, type ProductSlug } from '../data/products';
+
+interface Props {
+  title: string;
+  /** Lede under the h1; also the meta description. */
+  lede: string;
+  /** Chip text, e.g. "Payments". */
+  category: string;
+  /** Display date, e.g. "22 June 2026". */
+  date: string;
+  /** e.g. "4 min read". */
+  readTime: string;
+  /** Original article URL on blog.aryze.io. */
+  sourceUrl: string;
+  /** Product shown in the Related product aside. Default: Pay by Bank. */
+  product?: ProductSlug;
+  /** Full <title> when "{title} — Aryze Blog" would run over 60 characters. */
+  metaTitle?: string;
+  /** Meta description when the lede runs over 155 characters. */
+  metaDescription?: string;
+}
+
+const { title, lede, category, date, readTime, sourceUrl, product = 'pay-by-bank', metaTitle, metaDescription } = Astro.props;
+const p = getProduct(product);
+---
+
+<Base title={metaTitle ?? `${title} — Aryze Blog`} description={metaDescription ?? lede}>
+  <article>
+    <header class="post-hero">
+      <div class="container">
+        <p class="post-meta"><span class="chip">{category}</span><span class="mono">{date} · {readTime}</span></p>
+        <h1>{title}</h1>
+        <p class="lede">{lede}</p>
+      </div>
+    </header>
+    <section class="section section--tight">
+      <div class="container">
+        <div class="prose post-body">
+          <slot />
+        </div>
+        <aside class="post-cta">
+          <div>
+            <p class="post-cta-label">Related product</p>
+            <h3>{p.name}</h3>
+            <p>{p.oneLiner}</p>
+            <p class="post-cta-chip"><StatusChip product={product} /></p>
+          </div>
+          <div class="btn-row">
+            <a href={p.url} class="btn btn--ghost">See the product</a>
+            <a href="/contact" class="btn btn--primary">Talk to Aryze</a>
+          </div>
+        </aside>
+        <p class="post-source muted">
+          Originally published on <a href={sourceUrl} target="_blank" rel="noopener">blog.aryze.io</a>.
+        </p>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .post-hero {
+    border-bottom: 1px solid var(--line-muted);
+    background: var(--sand);
+    padding: clamp(56px, 7vw, 88px) 0 clamp(32px, 4vw, 48px);
+  }
+  .post-hero h1 {
+    max-width: 22em;
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  .post-meta {
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    display: flex;
+  }
+  .post-meta .mono {
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+  .post-body {
+    margin-inline: auto;
+    padding-block: clamp(24px, 4vw, 40px);
+  }
+  .post-body :global(h2) {
+    margin-top: 2em;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  .post-body :global(li) {
+    margin-bottom: 0.4em;
+  }
+  .post-body :global(blockquote) {
+    border-left: 3px solid var(--blue);
+    color: var(--muted);
+    margin: 1.5em 0;
+    padding: 0.2em 0 0.2em 1.2em;
+  }
+  .post-cta {
+    background: var(--accent-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    gap: 20px;
+    max-width: 720px;
+    margin: 24px auto 0;
+    padding: clamp(24px, 4vw, 36px);
+    display: grid;
+  }
+  .post-cta-label {
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cta);
+    margin-bottom: 8px;
+    font-size: 0.6875rem;
+  }
+  .post-cta h3 {
+    margin-bottom: 6px;
+  }
+  .post-cta p {
+    color: var(--muted);
+    margin: 0;
+  }
+  .post-cta .post-cta-chip {
+    margin-top: 12px;
+  }
+  .post-source {
+    max-width: 720px;
+    margin: 28px auto 0;
+    font-size: 0.8125rem;
+  }
+</style>

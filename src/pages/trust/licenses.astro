@@ -1,0 +1,154 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import StatusChip from '../../components/StatusChip.astro';
+import { getProduct, type ProductSlug } from '../../data/products';
+
+/** S3: one row per visible product (regulation.md S3). Names, chips and URLs come from the registry. */
+const responsibilities: { product: ProductSlug; text: string }[] = [
+  {
+    product: 'pay-by-bank',
+    text: 'Live in the UK and the EU. Bank connections run on Mastercard Open Banking. These are open-banking connections, not card acquiring. Payment initiation runs under a licensed partner’s roof and covers PIS and AIS across the UK and the EU. Countries, banks and merchant eligibility are confirmed for each deployment.',
+  },
+  {
+    product: 'pay-by-crypto',
+    text: 'The merchant model being built uses a crypto-asset service provider (CASP) to receive, screen and convert supported assets and settle fiat. The merchant needs the required CASP relationship. Pay by Crypto is in build and not available yet.',
+  },
+  {
+    product: 'digital-cash',
+    text: 'The issuer needs the appropriate authorisation for the arrangement. Define its legal obligations, backing, reserve holder and redemption terms. Aryze’s implemented issuance technology is separate from permission to issue a particular instrument.',
+  },
+  {
+    product: 'on-chain-fx',
+    text: 'Aryze supplies conversion and interoperability technology. The route must identify who provides quotes, carries exposure, moves backing and performs any regulated conversion or redemption activities. Third-party issuers must agree the interfaces, permissions and terms. Each bank works on its own licence, and Aryze is never a party to the money.',
+  },
+  {
+    product: 'walletless-settlement',
+    text: 'The bank provides the service to its clients under its own licence. Under MiCA, a credit institution can provide crypto-asset services by notification. The bank holds no wallet, no keys and no custody. Aryze is never the issuer or the licence holder.',
+  },
+  {
+    product: 'blockchain-connector',
+    text: 'The bank issues its own token under its own keys and its own licence. The network’s coin is held in the bank’s own custody or with its custody vendor. Network policy belongs to the network.',
+  },
+];
+const rows = responsibilities
+  .map((r) => ({ ...r, p: getProduct(r.product) }))
+  .filter((r) => !r.p.draft);
+---
+
+<Base
+  title="Regulatory status — Aryze"
+  description="Aryze is a Danish technology company, not a bank. Who is responsible for what in each Aryze product, and what must be settled before regulated delivery."
+>
+  <PageHero
+    eyebrow="Trust · Regulation"
+    title="The right entity for the activity."
+    lede="An integration does not confer a licence. Each regulated service needs an entity whose permissions cover that activity, market and customer."
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="route-panel">
+        <h2>Aryze’s current status</h2>
+        <p class="lede">
+          Aryze ApS is a Danish technology company (CVR 38895052). It is not itself a licensed bank, payment institution
+          or e-money institution.
+        </p>
+        <p>
+          Aryze supplies technology. Where the proposed service includes regulated activities, the appropriately
+          authorised client or provider must perform them under the agreed contractual structure. An existing bank or
+          payments licence is not automatically sufficient for every digital-asset activity.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Service responsibilities</span>
+        <h2>What needs to be established.</h2>
+      </div>
+      <ol class="route-proof-list">
+        {
+          rows.map((r) => (
+            <li>
+              <div class="service-head">
+                <h3>
+                  <a href={r.p.url}>{r.p.name}</a>
+                </h3>
+                <StatusChip product={r.product} />
+              </div>
+              <p>{r.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="route-note">
+        These descriptions explain delivery roles, not a blanket authorisation or country-coverage statement. The
+        contracting and regulated entities, permissions, service terms and geographic scope must be established for your
+        engagement.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Before regulated delivery</span>
+        <h2>Know who owes what to whom.</h2>
+        <p class="lede">
+          Identify the entity receiving funds or assets, the legal claim created, the applicable protections and the
+          party responsible for execution, redemption, complaints and exceptions.
+        </p>
+        <p>
+          Aryze does not offer standalone bank accounts or institutional custody. Existing accounts and chosen
+          providers can be endpoints in an agreed integration.
+        </p>
+      </div>
+      <div class="route-panel">
+        <h3>Technology readiness is not service authorisation.</h3>
+        <p>
+          A working API, token contract or demonstration does not establish that a complete regulated service is
+          available. The scope of the agreement and the responsible entities matter.
+        </p>
+        <a class="arrow-link" href="/trust/reserves">Backing and redemption responsibilities</a>
+      </div>
+    </div>
+  </section>
+
+  <CtaPanel
+    title="Discuss your service’s regulatory route."
+    text="Bring the activity, entities and markets in scope. We can identify the provider roles and supporting evidence available for the proposed engagement."
+    secondary={{ label: 'How it works', href: '/how-it-works' }}
+  />
+</Base>
+
+<style>
+  /* Keep body paragraphs in a panel at the lede's reading width. */
+  .route-panel p {
+    max-width: 46em;
+  }
+
+  .service-head {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    margin-bottom: 8px;
+    display: flex;
+  }
+
+  .service-head h3 {
+    margin: 0;
+  }
+
+  .service-head a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .service-head a:hover {
+    color: var(--cta);
+  }
+</style>

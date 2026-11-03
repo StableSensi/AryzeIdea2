@@ -1,0 +1,52 @@
+---
+/**
+ * Product-hero footer, placed in PageHero's default slot (pass no `chips` to
+ * PageHero): optional extra paragraphs (default slot), the registry
+ * StatusChip, the §8.2 status line and the hero CTA. For a draft product
+ * without an approved chip and status line, both are omitted; a page may
+ * pass its own draft-only placeholder in the "status" slot.
+ */
+import StatusChip from '../../StatusChip.astro';
+import { getProduct, type ProductSlug } from '../../../data/products';
+
+interface Props {
+  product: ProductSlug;
+  cta?: { label: string; href: string };
+}
+const p = getProduct(Astro.props.product);
+const { cta = { label: 'Talk to Aryze', href: '/contact' } } = Astro.props;
+---
+
+<div class="hero-extra"><slot /></div>
+{p.chip && <div class="chip-row hero-status-chip"><StatusChip product={p.slug} /></div>}
+{p.statusLine && <p class="hero-status-line">{p.statusLine}</p>}
+<slot name="status" />
+<div class="btn-row hero-status-cta">
+  <a class="btn btn--primary btn--lg" href={cta.href}>{cta.label}</a>
+</div>
+
+<style>
+  .hero-extra:empty {
+    display: none;
+  }
+  .hero-extra :global(p) {
+    color: var(--muted);
+    max-width: 34em;
+    margin: 12px 0 0;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  .hero-status-chip {
+    margin-top: 28px;
+  }
+  .hero-status-line {
+    color: var(--muted);
+    max-width: 34em;
+    margin: 12px 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  .hero-status-cta {
+    margin-top: 28px;
+  }
+</style>

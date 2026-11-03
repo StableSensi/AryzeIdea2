@@ -1,0 +1,110 @@
+---
+/**
+ * DRAFT (copy front matter draft: true). noindex, unlinked, reachable only by
+ * direct URL. The <NEEDS FOUNDER> placeholders from the copy file render here
+ * on purpose, for review; they never appear on a non-draft surface.
+ */
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import StatusChip from '../../components/StatusChip.astro';
+import WhatItIs from '../../components/product/WhatItIs.astro';
+import WhoFor from '../../components/product/WhoFor.astro';
+import Steps from '../../components/product/Steps.astro';
+import Included from '../../components/product/Included.astro';
+import NotIncluded from '../../components/product/NotIncluded.astro';
+import StatusBlock from '../../components/product/StatusBlock.astro';
+import RunsOnMoneyOS from '../../components/product/RunsOnMoneyOS.astro';
+import CTA from '../../components/product/CTA.astro';
+import HeroStatus from '../../components/pages/products/HeroStatus.astro';
+import TrackRecord from '../../components/pages/products/TrackRecord.astro';
+import { getProduct } from '../../data/products';
+
+const product = getProduct('tokenization');
+const NEEDS = '<NEEDS FOUNDER>';
+---
+
+<Base title="Tokenization — Aryze" description={NEEDS} draft={true}>
+  <PageHero
+    tone="sand"
+    eyebrow="Products · Issue"
+    title={product.name}
+    lede={product.oneLiner ?? `${NEEDS} — the one-liner (build plan §8.1)`}
+    image={{ src: '/images/map-flow.webp', alt: 'Two colleagues reviewing a plan in a Copenhagen meeting room', position: '50% 50%' }}
+    video="/videos/collaboration-living-60fps.mp4"
+  >
+    <HeroStatus product="tokenization">
+      <Fragment slot="status">
+        {!product.chip && <div class="chip-row draft-chip"><StatusChip label={NEEDS} /></div>}
+        {!product.statusLine && <p class="draft-line">{NEEDS} — draft until approved</p>}
+      </Fragment>
+    </HeroStatus>
+  </PageHero>
+
+  <WhatItIs
+    title="Your own token. Issued one-to-one under your own keys."
+    body={[
+      'The token is the institution’s own, issued one-to-one under the institution’s own keys. Aryze provides the technology. The institution stays issuer and operator under its own licence.',
+      'A tokenised deposit is a digital representation of a deposit claim on the issuing bank, under the applicable legal and regulatory arrangement.',
+      `${NEEDS} — what Tokenization covers beyond this, and how it differs from Digital Cash and Blockchain Connector.`,
+    ]}
+  />
+
+  <WhoFor
+    body={`${NEEDS} — the buyer.`}
+    items={[
+      { title: 'Banks & EMIs', href: '/solutions/banks-emis' },
+      { title: 'Stablecoin & token issuers', href: '/solutions/issuers' },
+    ]}
+  />
+
+  <Steps title={NEEDS} tone="plain" steps={[{ title: NEEDS }, { title: NEEDS }, { title: NEEDS }]} />
+
+  <Included tone="card" items={[{ title: NEEDS }]} />
+
+  <NotIncluded
+    tone="plain"
+    items={[
+      {
+        title: 'Aryze is not the issuer',
+        text: 'Aryze does not hold the licence, the keys or the money, and does not operate the programme.',
+      },
+      { title: NEEDS, text: 'further limits.' },
+    ]}
+    link={{ label: 'Backing & redemption', href: '/trust/reserves' }}
+  />
+
+  <section class="section section--card" id="track-record">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Track record</span>
+        <h2>What is delivered, and what is not live yet.</h2>
+      </div>
+      <TrackRecord note="Aryze, since 2017." />
+    </div>
+  </section>
+
+  <StatusBlock product="tokenization">
+    {!product.chip && <div class="draft-chip-block"><StatusChip label={NEEDS} /></div>}
+    {!product.statusLine && <p>{NEEDS}</p>}
+  </StatusBlock>
+
+  <RunsOnMoneyOS product="tokenization" />
+
+  <CTA title={NEEDS} />
+</Base>
+
+<style>
+  .draft-chip {
+    margin-top: 28px;
+  }
+  .draft-line {
+    color: var(--muted);
+    max-width: 34em;
+    margin: 12px 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  .draft-chip-block {
+    margin-bottom: 12px;
+  }
+</style>

@@ -1,0 +1,11 @@
+---
+/** Renders an Item's chip: a product slug or { label, tone }. */
+import StatusChip from '../StatusChip.astro';
+import type { ItemChip } from './types';
+interface Props {
+  chip?: ItemChip;
+}
+const { chip } = Astro.props;
+---
+
+{chip && (typeof chip === 'string' ? <StatusChip product={chip} /> : <StatusChip label={chip.label} tone={chip.tone} />)}

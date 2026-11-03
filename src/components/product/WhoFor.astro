@@ -1,0 +1,62 @@
+---
+/**
+ * "Who it's for" section: eyebrow, optional h2, lede paragraphs and optional
+ * cards (an item with href becomes a linked card, e.g. a solution page).
+ */
+import SectionHead from './SectionHead.astro';
+import ItemChip from './ItemChip.astro';
+import { sectionClass, type Item, type SectionTone } from './types';
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  body?: string | string[];
+  items?: Item[];
+  /** Card columns at desktop. Default 3 (2 when there are 2 or 4 items). */
+  columns?: 2 | 3 | 4;
+  tone?: SectionTone;
+  id?: string;
+}
+const { eyebrow = "Who it's for", title, body, items = [], tone = 'card', id } = Astro.props;
+const columns = Astro.props.columns ?? (items.length === 2 || items.length === 4 ? 2 : 3);
+---
+
+<section class={sectionClass(tone)} id={id}>
+  <div class="container">
+    <SectionHead eyebrow={eyebrow} title={title} body={body} />
+    {
+      items.length > 0 && (
+        <div class={`grid grid--${columns}`}>
+          {items.map((it) => {
+            const Tag = it.href ? 'a' : 'div';
+            return (
+              <Tag class="card" href={it.href}>
+                <h3>{it.title}</h3>
+                {it.text && <p>{it.text}</p>}
+                {it.chip && <div class="who-chip"><ItemChip chip={it.chip} /></div>}
+              </Tag>
+            );
+          })}
+        </div>
+      )
+    }
+    <slot />
+  </div>
+</section>
+
+<style>
+  .who-chip {
+    margin-top: 16px;
+  }
+  /* Linked cards (a solution page) carry the same arrow as .arrow-link. */
+  a.card h3:after {
+    content: "→";
+    color: var(--cta);
+    transition: transform 0.2s var(--ease);
+    margin-left: 8px;
+    display: inline-block;
+  }
+  a.card:hover h3:after {
+    transform: translate(4px);
+  }
+</style>

@@ -1,0 +1,166 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import WhatItIs from '../../components/product/WhatItIs.astro';
+import WhoFor from '../../components/product/WhoFor.astro';
+import Steps from '../../components/product/Steps.astro';
+import NotIncluded from '../../components/product/NotIncluded.astro';
+import RunsOnMoneyOS from '../../components/product/RunsOnMoneyOS.astro';
+import CTA from '../../components/product/CTA.astro';
+import HeroStatus from '../../components/pages/products/HeroStatus.astro';
+import PartsTable from '../../components/pages/products/PartsTable.astro';
+import { getProduct } from '../../data/products';
+
+const product = getProduct('blockchain-connector');
+
+const tiers = [
+  {
+    label: 'Tier one · Pilot',
+    text: 'A working demonstration on a test coin, run on test rails. Debit an account, issue the bank’s token, move it, destroy it, credit. Plus the written architecture and the compliance analysis. This is the committed first deliverable.',
+  },
+  {
+    label: 'Tier two · Your core',
+    text: 'Real postings into the core, a route in the payment hub, screening called before issuance. We specify our side. The pace belongs to the bank’s core-banking provider, so the design is promised and the date is not.',
+  },
+  {
+    label: 'Tier three · The network',
+    text: 'The adapter to a specific network depends on that network’s own whitelisting policy, which neither we nor the bank controls. It is built against a stand-in.',
+  },
+];
+---
+
+<Base
+  title="Blockchain Connector — Aryze"
+  description="The integration layer that makes a settlement-network membership usable. The network's coin in your own vault, your own token issued one-to-one against it."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Products · Convert & settle"
+    title={product.name}
+    lede={product.oneLiner ?? ''}
+    image={{ src: '/images/about/hero-office.webp', alt: 'The Aryze office in Copenhagen', position: '50% 72%' }}
+    video="/videos/office-living-60fps.mp4"
+  >
+    <HeroStatus product="blockchain-connector">
+      <p>The network’s coin sits in your own vault. Your own token, issued one-to-one against it, is what moves.</p>
+    </HeroStatus>
+  </PageHero>
+
+  <WhatItIs
+    eyebrow="The situation"
+    title="Joining the network is the easy part."
+    body="Banks across Europe have joined shared settlement networks. No network publishes how its members integrate. The interfaces, the holding arrangements and the reconciliation are left to each bank, and most banks have no team and no technology in the building to do it."
+  />
+
+  <WhoFor
+    title="For member banks with no client product yet."
+    body={[
+      'Licensed banks that hold, or are about to hold, a membership in a shared settlement network and want their clients to transact in it.',
+      'If the bank only wants to hold the coin as a treasury position, a wallet is enough and it doesn’t need this. The layer earns its place when clients pay and are paid on the network, because then the coin has to become account money.',
+    ]}
+  />
+
+  <Steps
+    eyebrow="How it works · Custody and mint"
+    title="Hold the coin. Move your own token."
+    tone="plain"
+    steps={[
+      {
+        title: 'The holding',
+        text: 'The network’s coin arrives in the bank’s own whitelisted vault. A nostro account for a coin. It sits there, and it is not what moves.',
+      },
+      {
+        title: 'The bank’s own token',
+        text: 'The bank issues its own token one-to-one against the holding, under the bank’s own keys. That is what travels.',
+      },
+      { title: 'Beside the core', text: 'The settlement layer sits beside the unchanged core. A debit issues. A credit redeems.' },
+      {
+        title: 'Continuous matching',
+        text: 'The holding and the issued token stay reconciled, with entry and exit points the core and the payment hub consume.',
+      },
+    ]}
+    note="One adapter per network. The layer underneath stays the same, whichever networks matter."
+  />
+
+  <WhatItIs eyebrow="Who owns what" title="Three parts. Two of them ours." tone="card">
+    <PartsTable
+      caption="The three parts and who owns each"
+      headers={['Part', 'What it does', 'Whose']}
+      rows={[
+        ['The holding', 'The network’s coin in a whitelisted vault.', 'The bank’s own custody, or a vendor’s. Both work.'],
+        [
+          'The mint engine',
+          'The bank’s own token, created and destroyed one-to-one against the holding.',
+          'Aryze’s software. The bank’s keys.',
+        ],
+        [
+          'The ledger bridge',
+          'Continuous matching of holding against token, and the entry and exit points the core and payment hub consume.',
+          'Aryze’s software.',
+        ],
+      ]}
+    />
+    <p class="route-note">The holding is deliberately not ours. Where a bank has already bought custody, the layer sits on top of it.</p>
+  </WhatItIs>
+
+  <section class="section" id="delivery">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">How it is delivered</span>
+        <h2>Three tiers. One committed deliverable.</h2>
+      </div>
+      <div class="grid grid--3 tiers">
+        {
+          tiers.map((t, i) => (
+            <article class={i === 0 ? 'route-panel tier tier--committed' : 'route-panel tier'}>
+              <span class="route-number">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{t.label}</h3>
+              <p>{t.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <NotIncluded
+    items={[
+      {
+        title: 'Aryze is infrastructure',
+        text: 'Aryze is never the issuer, does not operate the programme and does not hold the bank’s licence, keys or money.',
+      },
+      { title: 'Not custody', text: 'The holding sits with the bank or with its existing custody vendor.' },
+      { title: 'Not a wallet, and not compliance software', text: 'Screening is called by the flow. It is not sold as a product.' },
+      { title: 'No foreign token to govern', text: 'The network’s coin is parked as a holding. The bank’s own token is what moves.' },
+      {
+        title: 'No core replacement',
+        text: 'The layer sits beside the unchanged core. Core integration belongs to the bank’s core-banking provider, and we specify our side.',
+      },
+      { title: 'No network policy', text: 'Whether a member may hold the coin or build on top is the network’s decision.' },
+      { title: 'No consortium brokering', text: 'No membership negotiation on the bank’s behalf.' },
+    ]}
+  />
+
+  <RunsOnMoneyOS
+    product="blockchain-connector"
+    body={`${product.name} runs on MoneyOS, the same infrastructure under every Aryze product.`}
+  />
+
+  <CTA
+    eyebrow="One question first"
+    title="Start with your clients."
+    text="When this goes live, do you want your corporate clients transacting in it, or is this a treasury position for now?"
+  />
+</Base>
+
+<style>
+  .tier h3 {
+    margin: 12px 0 10px;
+  }
+  .tier p {
+    margin: 0;
+  }
+  .tier--committed {
+    border-color: var(--blue);
+  }
+</style>

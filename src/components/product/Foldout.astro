@@ -1,0 +1,13 @@
+---
+/** <details class="route-evidence"> fold-out with a summary and one or more paragraphs. */
+import { paragraphs, type Foldout } from './types';
+interface Props {
+  foldout: Foldout;
+}
+const { foldout } = Astro.props;
+---
+
+<details class="route-evidence">
+  <summary>{foldout.summary}</summary>
+  {paragraphs(foldout.body).map((p) => <p>{p}</p>)}
+</details>

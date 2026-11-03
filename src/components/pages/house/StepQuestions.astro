@@ -1,0 +1,84 @@
+---
+/**
+ * "Where to start" question cards, one per step (Accept / Issue / Convert &
+ * settle), used on /contact (S3) and /consulting (S4). Step numbers and labels
+ * come from the product registry. With `formId`, each card jumps to that
+ * ContactForm and starts the message with its question; without it, each card
+ * opens an email to info@aryze.io with the question in the body.
+ *
+ * Renders no <section>; an optional heading sits above the list.
+ */
+import { steps } from '../../../data/products';
+import { contactEmail } from '../../../data/site';
+
+interface Props {
+  /** Optional h2 above the cards (contact page). */
+  heading?: string;
+  /** Id of a ContactForm on the same page. */
+  formId?: string;
+}
+const { heading, formId } = Astro.props;
+
+const questions: Record<string, string> = {
+  accept: 'Which customers, markets and payment methods do you want to serve?',
+  issue: 'What instrument do you have or want to issue, and what should it connect to?',
+  convert: 'Where does the money start, where should it arrive, and which currencies should the route connect?',
+};
+const mailto = (subject: string, body: string) =>
+  `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n')}`;
+const items = steps.map((s) => ({
+  number: s.number,
+  label: s.label,
+  question: questions[s.id],
+  href: formId ? `#${formId}` : mailto(`${s.label} enquiry`, questions[s.id]),
+}));
+---
+
+<div class="step-questions">
+  {heading && <h2>{heading}</h2>}
+  {
+    items.map((t) => (
+      <a href={t.href} data-prefill={formId ? t.question : undefined}>
+        <span>{t.number}</span>
+        <div>
+          <h3>{t.label}</h3>
+          <p>{t.question}</p>
+        </div>
+        <b aria-hidden="true">{formId ? '→' : '↗'}</b>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .step-questions > h2 {
+    margin-bottom: 24px;
+    font-size: 1.5rem;
+  }
+
+  .step-questions > a {
+    border-top: 1px solid var(--line);
+    color: var(--navy);
+    grid-template-columns: 24px 1fr 20px;
+    gap: 20px;
+    padding: 24px 0;
+    text-decoration: none;
+    display: grid;
+  }
+
+  .step-questions > a > span {
+    font: 0.6875rem var(--mono);
+    color: var(--cta);
+    padding-top: 5px;
+  }
+
+  .step-questions h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+
+  .step-questions p {
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+</style>

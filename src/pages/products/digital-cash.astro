@@ -1,0 +1,133 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import WhoFor from '../../components/product/WhoFor.astro';
+import Steps from '../../components/product/Steps.astro';
+import NotIncluded from '../../components/product/NotIncluded.astro';
+import RunsOnMoneyOS from '../../components/product/RunsOnMoneyOS.astro';
+import CTA from '../../components/product/CTA.astro';
+import HeroStatus from '../../components/pages/products/HeroStatus.astro';
+import { getProduct } from '../../data/products';
+
+const product = getProduct('digital-cash');
+const fx = getProduct('on-chain-fx');
+---
+
+<Base
+  title="Digital Cash — Aryze"
+  description="Issue for the payment, against confirmed eligible backing, and redeem into the money the recipient wants. Issuer and route agreed per engagement."
+>
+  <PageHero
+    tone="sand"
+    eyebrow="Products · Issue"
+    title={product.name}
+    lede={product.oneLiner ?? ''}
+    image={{ src: '/images/map-flow.webp', alt: 'Two colleagues reviewing a plan in a Copenhagen meeting room', position: '50% 50%' }}
+    video="/videos/collaboration-living-60fps.mp4"
+  >
+    <HeroStatus product="digital-cash" />
+  </PageHero>
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Stablecoin infrastructure</span>
+        <h2>Useful from the first funded transaction.</h2>
+        <p class="lede">Issue against confirmed eligible backing, connect through {fx.name} and redeem into the money the recipient wants.</p>
+      </div>
+      <div class="route-panel">
+        <h3>Less standing token inventory. Not less backing.</h3>
+        <p>Issuing on demand reduces dependence on a pre-existing token market. Backing, redemption funding, FX exposure, counterparties, screening and applicable authorisation remain.</p>
+        <a class="arrow-link" href="/trust/reserves">Understand the backing</a>
+      </div>
+    </div>
+  </section>
+
+  <WhoFor
+    body="Stablecoin and token issuers who need to create money for a defined payment, and treasury teams with a recurring intercompany or supplier flow."
+    items={[
+      { title: 'Stablecoin & token issuers', href: '/solutions/issuers' },
+      { title: 'Corporate Treasury', href: '/solutions/treasury' },
+    ]}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">A connected mechanism</span>
+        <h2>From bank money. Back to bank money.</h2>
+      </div>
+      <ol class="route-flow">
+        <li><span class="route-number">01</span><h3>Fund</h3><p>Confirm eligible backing.</p></li>
+        <li><span class="route-number">02</span><h3>Issue</h3><p>Create what the transaction needs.</p></li>
+        <li>
+          <span class="route-number">03</span><h3>Convert</h3>
+          <p>Connect through <a href={fx.url}>{fx.name}</a>.</p>
+        </li>
+        <li><span class="route-number">04</span><h3>Redeem</h3><p>Return to ordinary money.</p></li>
+      </ol>
+      <a class="arrow-link dc-link" href="/how-it-works">See the complete flow</a>
+    </div>
+  </section>
+
+  <Steps
+    eyebrow="Designed for institutional use"
+    title="More than one kind of money."
+    label="Three kinds of money"
+    steps={[
+      {
+        title: 'Tokenised deposits',
+        text: 'A digital representation of a deposit claim on the issuing bank, under the applicable legal and regulatory arrangement.',
+      },
+      { title: 'Payment tokens', text: 'Branded units designed to move through a selected payment network.' },
+      { title: 'Settlement units', text: 'Purpose-built money for consortium, network or intercompany value movement.' },
+    ]}
+  />
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Existing technology</span>
+        <h2>Multiple forms of value. One connected pattern.</h2>
+        <p class="lede">Euro, dollar, sterling and gold implementations demonstrate the issuance technology.</p>
+      </div>
+      <a class="card add-fx" href={fx.url}>
+        <h3>Already issue? Add {fx.name}.</h3>
+        <p>Move the money you already issue across currencies and networks.</p>
+      </a>
+    </div>
+  </section>
+
+  <NotIncluded
+    body="On-chain conversion does not make bank legs atomic or guarantee instant account credit. Not every payment needs FX or token issuance."
+    items={[
+      { title: 'Aryze is not the issuer', text: 'The issuer holds its own authorisation and its own legal obligations.' },
+      {
+        title: 'Each arrangement is explicit.',
+        text: 'Issuer, backing, reserve holder, redemption and authorisation are defined per service.',
+      },
+    ]}
+    link={{ label: 'Backing & redemption', href: '/trust/reserves' }}
+  />
+
+  <RunsOnMoneyOS product="digital-cash" />
+
+  <CTA
+    title="Start with one currency and one use case."
+    text="Define the issuer, backing and destination."
+    secondary={{ label: 'How it works', href: '/how-it-works' }}
+  />
+</Base>
+
+<style>
+  .dc-link {
+    margin-top: 24px;
+    display: inline-block;
+  }
+  .add-fx {
+    align-self: center;
+  }
+  .add-fx p {
+    margin-bottom: 0;
+  }
+</style>

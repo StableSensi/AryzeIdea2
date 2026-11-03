@@ -1,0 +1,263 @@
+---
+/**
+ * Banks & EMIs "Built around you" puzzle: what the institution keeps (customer
+ * relationship, EUR account, existing experience, banking relationships) and
+ * the Aryze piece that slots in. Desktop draws SVG piece shapes on a 3x3 grid;
+ * below a 34rem container width it stacks into rounded cards.
+ */
+import PuzzleJoin from '../../PuzzleJoin.astro';
+
+const figureStyle = [
+  '--puzzle-ratio: 1345/900',
+  '--puzzle-columns: 570fr 420fr 355fr',
+  '--puzzle-rows: 270fr 370fr 260fr',
+  '--puzzle-key: var(--connector-radius)',
+  '--puzzle-gap: var(--connector-gutter)',
+  `--puzzle-corner: ${(16 / 1345) * 100}cqi`,
+].join('; ');
+---
+
+<figure class="assembly" style={figureStyle}>
+  <p class="assembly-caption">Built around you</p>
+  <div class="assembly-plot">
+    <ul class="assembly-keep">
+      <li class="assembly-customer">
+        <svg viewBox="0 0 1345 270" class="assembly-shape" aria-hidden="true" focusable="false">
+          <path d="M16 0 L1329 0 C1345 0 1345 0 1345 16 L1345 270 L990 270 L570 270 L0 270 L0 16 C0 0 0 0 16 0 Z"></path>
+        </svg><strong>Your client</strong>
+      </li>
+      <li class="assembly-account">
+        <svg viewBox="0 270 570 370" class="assembly-shape" aria-hidden="true" focusable="false">
+          <path d="M0 270 L570 270 L570 640 L0 640 L0 270 Z"></path>
+        </svg><strong>Your EUR account</strong><small>The starting point</small>
+      </li>
+      <li class="assembly-experience">
+        <svg viewBox="570 270 420 370" class="assembly-shape" aria-hidden="true" focusable="false">
+          <path d="M570 270 L990 270 L990 640 L570 640 L570 270 Z"></path>
+        </svg><strong>Your existing experience</strong><small>Your brand. Your interface.</small>
+      </li>
+      <li class="assembly-foundation">
+        <svg viewBox="0 640 1345 260" class="assembly-shape" aria-hidden="true" focusable="false">
+          <path d="M0 640 L570 640 L990 640 L1345 640 L1345 884 C1345 900 1345 900 1329 900 L16 900 C0 900 0 900 0 884 L0 640 Z"></path>
+        </svg><strong>Your banking relationships</strong>
+      </li>
+    </ul>
+    <div class="assembly-add">
+      <svg viewBox="990 270 355 370" class="assembly-shape" aria-hidden="true" focusable="false">
+        <path d="M990 270 L1345 270 L1345 640 L990 640 L990 270 Z"></path>
+      </svg><PuzzleJoin direction="left" /><PuzzleJoin direction="up" /><img src="/brand/logo-wordmark-light.svg" alt="Aryze" width="100" height="28" />
+      <h3>What Aryze adds.</h3>
+      <p>Connect. Convert. Reconcile.</p>
+    </div>
+  </div>
+  <figcaption>
+    <span><i class="legend-keep" aria-hidden="true"></i>What you keep</span><span><i class="legend-add" aria-hidden="true"></i>What we bring</span>
+  </figcaption>
+</figure>
+
+<style>
+  .assembly {
+    width: 100%;
+    min-width: 0;
+    font-family: var(--font);
+    align-self: center;
+    margin: 0;
+    container-type: inline-size;
+  }
+  .assembly-caption {
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 0.875rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+  }
+  .assembly-plot {
+    isolation: isolate;
+    grid-template-columns: var(--puzzle-columns);
+    grid-template-rows: var(--puzzle-rows);
+    aspect-ratio: var(--puzzle-ratio);
+    color: #001e2b;
+    display: grid;
+    position: relative;
+  }
+  .assembly-keep {
+    display: contents;
+  }
+  .assembly-keep li,
+  .assembly-add {
+    --piece-fill: #d4e4f1;
+    --puzzle-join-fill: var(--piece-fill);
+    overflow-wrap: normal;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.375rem;
+    min-width: 0;
+    padding: 2.5cqi;
+    display: flex;
+    position: relative;
+  }
+  .assembly-keep .assembly-experience,
+  .assembly-keep .assembly-foundation {
+    --piece-fill: #e1e8e9;
+  }
+  .assembly-shape {
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    fill: var(--piece-fill);
+    stroke: var(--bg);
+    stroke-width: var(--connector-gutter);
+    stroke-linejoin: round;
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+  .assembly-shape path {
+    vector-effect: non-scaling-stroke;
+  }
+  .assembly-keep li > *:not(svg),
+  .assembly-add > *:not(svg) {
+    margin: 0;
+    position: relative;
+  }
+  .assembly-customer {
+    grid-area: 1/1 / auto/-1;
+  }
+  .assembly-keep .assembly-account {
+    grid-area: 2/1;
+    padding-inline-end: 3cqi;
+  }
+  .assembly-keep .assembly-experience {
+    padding-inline: 2cqi calc(var(--puzzle-key) + 1.5cqi);
+    grid-area: 2/2;
+  }
+  .assembly-foundation {
+    grid-area: 3/1 / auto/-1;
+  }
+  .assembly-keep strong {
+    letter-spacing: -0.02em;
+    font-size: clamp(0.9375rem, 3.1cqi, 2.75rem);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .assembly-customer strong {
+    font-size: clamp(1.125rem, 4cqi, 3.75rem);
+    font-weight: 400;
+  }
+  .assembly-keep small,
+  .assembly-add p {
+    font-size: clamp(0.75rem, 2.25cqi, 2rem);
+    line-height: 1.5;
+  }
+  .assembly-keep small {
+    color: #122d47;
+  }
+  .assembly-add {
+    --piece-fill: #007599;
+    padding-inline: calc(var(--puzzle-key) + 1.5cqi) 2cqi;
+    color: #fff;
+    grid-area: 2/3;
+    gap: 1.1cqi;
+  }
+  .assembly-add img {
+    width: 12cqi;
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  .assembly-add h3 {
+    color: inherit;
+    letter-spacing: -0.025em;
+    font-size: clamp(1rem, 3.3cqi, 3rem);
+    font-weight: 400;
+    line-height: 1.3;
+  }
+  figcaption {
+    color: var(--muted);
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.25rem;
+    margin-block-start: 0.875rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    display: flex;
+  }
+  figcaption span {
+    align-items: center;
+    gap: 0.5rem;
+    display: inline-flex;
+  }
+  .legend-keep,
+  .legend-add {
+    background: #d4e4f1;
+    flex: none;
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+  .legend-add {
+    background: #007599;
+  }
+  @container (width<=34rem) {
+    .assembly-plot {
+      --stack-radius: var(--connector-radius);
+      --stack-gap: var(--connector-gutter);
+      gap: var(--stack-gap);
+      aspect-ratio: auto;
+      flex-direction: column;
+      display: flex;
+    }
+    .assembly-shape {
+      display: none;
+    }
+    .assembly-add :global(.puzzle-join[data-direction="up"]) {
+      --puzzle-join-y: calc(-1 * var(--stack-gap) / 2);
+    }
+    .assembly-add :global(.puzzle-join[data-direction="left"]) {
+      --puzzle-join-x: 50%;
+      --puzzle-join-y: calc(100% + var(--stack-gap) / 2);
+      --puzzle-join-turn: 180deg;
+    }
+    .assembly-keep li,
+    .assembly-keep .assembly-account,
+    .assembly-keep .assembly-experience,
+    .assembly-add {
+      padding: calc(var(--stack-radius) + 1rem) 20px;
+      gap: 0.375rem;
+    }
+    .assembly-keep li:before,
+    .assembly-add:before {
+      content: "";
+      border-radius: max(8px, var(--puzzle-corner));
+      background: var(--piece-fill);
+      position: absolute;
+      inset: 0;
+    }
+    .assembly-add {
+      order: 1;
+    }
+    .assembly-foundation {
+      order: 2;
+    }
+    .assembly-keep strong,
+    .assembly-add h3 {
+      font-size: 1.125rem;
+      line-height: 1.4;
+    }
+    .assembly-keep .assembly-customer strong {
+      font-size: 1.25rem;
+    }
+    .assembly-keep small,
+    .assembly-add p {
+      font-size: 0.9375rem;
+    }
+    .assembly-add img {
+      width: 5rem;
+    }
+  }
+  @media (width <= 1200px) {
+    :global(.two-col:has(> .assembly)) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

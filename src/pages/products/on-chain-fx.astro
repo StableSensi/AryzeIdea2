@@ -1,0 +1,197 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import WhoFor from '../../components/product/WhoFor.astro';
+import Steps from '../../components/product/Steps.astro';
+import Included from '../../components/product/Included.astro';
+import NotIncluded from '../../components/product/NotIncluded.astro';
+import StatusBlock from '../../components/product/StatusBlock.astro';
+import RunsOnMoneyOS from '../../components/product/RunsOnMoneyOS.astro';
+import CTA from '../../components/product/CTA.astro';
+import HeroStatus from '../../components/pages/products/HeroStatus.astro';
+import TrackRecord from '../../components/pages/products/TrackRecord.astro';
+import { getProduct } from '../../data/products';
+
+const product = getProduct('on-chain-fx');
+
+const example = [
+  { title: 'Start with euros', text: 'Confirm funding in the agreed account.' },
+  {
+    title: 'Connect the steps',
+    text: 'Burn on the euro side, mint on the sterling side, with the conversion inside one settlement event.',
+  },
+  { title: 'Pay out pounds', text: 'The receiving bank credits the supplier’s account in pounds.' },
+  { title: 'Return the record', text: 'Bring the payment status and reconciliation together.' },
+];
+---
+
+<Base
+  title="On-chain FX — Aryze"
+  description="Convert and move value across currencies and chains. For the corridors, currencies and hours the incumbent rails don't cover, at one rate end to end."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Products · Convert & settle"
+    title={product.name}
+    lede={product.oneLiner ?? ''}
+    image={{ src: '/images/hero-visual.jpg', alt: 'Copenhagen seen through trails of moving light', position: '50% 58%' }}
+    video="/videos/city-living-60fps.mp4"
+  >
+    <HeroStatus product="on-chain-fx">
+      <p>For the corridors, currencies and hours the incumbent rails don’t cover.</p>
+    </HeroStatus>
+  </PageHero>
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">What it is</span>
+        <h2>Convert the value. Preserve the relationship.</h2>
+        <p class="lede">{product.name} converts supported digital units directly through configured burn-and-mint routes.</p>
+      </div>
+      <div class="route-panel">
+        <h3>The engine, not a trading desk.</h3>
+        <p>Connect bank money, institutional tokens and networks through one defined route.</p>
+      </div>
+    </div>
+  </section>
+
+  <WhoFor
+    title="Use it where the rails run out."
+    body={`${product.name} is for licensed banks and financial institutions with a corridor the incumbent rails serve badly.`}
+    items={[
+      { title: 'Non-mainstream currency pairs', text: 'Where correspondent banking is still the only route.' },
+      { title: 'Off-hours and weekend settlement', text: 'For the days the correspondent chain is closed.' },
+      {
+        title: 'Thin or expensive correspondent coverage',
+        text: 'Where the chain takes the margin, or money sits abroad to keep the corridor open.',
+      },
+    ]}
+  >
+    <p class="route-note">Where a free central-bank rail already covers the currency pair, that rail wins.</p>
+  </WhoFor>
+
+  <Steps
+    title="Local money at both ends. One event between."
+    tone="plain"
+    steps={[
+      { title: 'Local debit', text: 'The sending bank debits its client in its own currency, on its own systems.' },
+      { title: 'One settlement event', text: 'The conversion is carried inside it. Burn on one side, mint on the other.' },
+      { title: 'Local credit', text: 'The receiving bank credits its client in its own currency.' },
+    ]}
+    note="The settlement unit exists only for that moment. Neither bank holds a digital asset, and nothing is left over to reconcile."
+  />
+
+  <Included
+    title="What the route carries."
+    tone="card"
+    items={[
+      { title: 'One rate end to end', text: 'Fixed for the movement, not assembled from a chain of hops.' },
+      { title: 'Local money at both ends', text: 'Each bank debits and credits in its own currency.' },
+      { title: 'No money parked abroad', text: 'The corridor does not need a prefunded position to stay open.' },
+      { title: 'Weekends as mid-week', text: 'The flow runs at weekends as it does on a Tuesday.' },
+      { title: 'One audit trail', text: 'Both legs post from the same event.' },
+    ]}
+  />
+
+  <section class="section" id="example">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">One customer request · illustrative</span>
+        <h2>Your customer pays in euros. Their supplier receives pounds.</h2>
+        <p class="lede">Your customer pays from the account they already have. Aryze connects the funding, conversion and payout steps agreed for the route.</p>
+      </div>
+      <ol class="route-flow route-flow--active" aria-label="Illustrative institutional payment route">
+        {
+          example.map((s, i) => (
+            <li>
+              <span class="route-number">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="route-boundary">Illustrative service design. Currency coverage, providers, funding, FX and authorisation are agreed for each arrangement.</p>
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Two applications</span>
+        <h2>For banks, and for token issuers.</h2>
+      </div>
+      <div class="grid grid--2">
+        <article class="route-panel">
+          <h3>Bank-money settlement</h3>
+          <p>Issue, convert and redeem underneath your existing customer experience.</p>
+          <a class="arrow-link" href="/solutions/banks-emis">For banks and EMIs</a>
+        </article>
+        <article class="route-panel">
+          <h3>Utility for an existing coin</h3>
+          <p>Keep your token and backing arrangements. Add supported currencies, tokens or networks.</p>
+          <a class="arrow-link" href="/solutions/issuers">For token issuers</a>
+        </article>
+      </div>
+      <details class="route-evidence">
+        <summary>What a conversion route must define</summary>
+        <ul>
+          <li>Supported units, networks and issuer interfaces, including who may mint and burn.</li>
+          <li>Conversion terms, quote authority, backing movements and responsibility for currency or counterparty exposure.</li>
+          <li>Funding and redemption endpoints, exception handling and evidence of completion.</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <NotIncluded
+    tone="plain"
+    body="On-chain atomicity, where implemented, applies to the conversion transaction. It is not a promise of simultaneous bank debits, reserve movements and final fiat credit. Converting between issuers does not make their legal claims or credit risks identical."
+    items={[
+      {
+        title: 'Not a network to join',
+        text: 'Each bank runs the software in its own estate. There is no membership and no shared venue.',
+      },
+      { title: 'Each bank on its own licence', text: 'Aryze does not operate under either bank’s licence.' },
+      { title: 'Aryze never holds the money', text: 'Not in transit, not at either end.' },
+      { title: 'Set per engagement', text: 'Corridors, currencies and counterparties are confirmed for each engagement.' },
+    ]}
+  />
+
+  <StatusBlock product="on-chain-fx" eyebrow="Track record" title="Work we can point to." statusLine="" tone="card" id="status">
+    <div class="fx-track">
+      <TrackRecord />
+      <a class="arrow-link fx-track__link" href="/how-it-works#evidence">Inspect the technical record</a>
+    </div>
+  </StatusBlock>
+
+  <RunsOnMoneyOS
+    product="on-chain-fx"
+    body={`${product.name} runs on MoneyOS, the same infrastructure under every Aryze product.`}
+  />
+
+  <CTA
+    title="Bring us one corridor."
+    text="Name the source, destination and responsible parties. Aryze configures the route between them."
+  />
+</Base>
+
+<style>
+  .route-boundary {
+    max-width: 76em;
+    color: var(--muted);
+    border-left: 2px solid var(--blue);
+    margin: 24px 0 0;
+    padding-left: 16px;
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+  .fx-track {
+    margin-top: 28px;
+  }
+  .fx-track__link {
+    margin-top: 24px;
+    display: inline-block;
+  }
+</style>

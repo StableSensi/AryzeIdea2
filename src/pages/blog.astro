@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaPanel from '../components/CtaPanel.astro';
+import BlogCard from '../components/pages/trust-blog/BlogCard.astro';
+
+const posts = [
+  {
+    href: '/blog/pay-by-bank-vs-card-fees',
+    category: 'Payments',
+    date: '22 Jun 2026',
+    readTime: '4 min read',
+    title: 'Pay by Bank vs. Card Fees: When Does A2A Actually Pay Off?',
+    excerpt:
+      'In this illustration, a £0.50 flat Pay by Bank fee breaks even with a 1.5% card rate at about £33. The calculator lets you enter both methods’ fixed and percentage fees.',
+  },
+  {
+    href: '/blog/pay-by-bank-already-in-your-pocket',
+    category: 'Payments',
+    date: '20 Apr 2026',
+    readTime: '5 min read',
+    title: 'Pay by Bank: The Payment Method Already in Your Pocket',
+    excerpt:
+      "Pay by Bank moves money from the customer's bank without card details or card-scheme chargebacks. Bank-payment fraud, refund and dispute rules still apply.",
+  },
+];
+---
+
+<Base
+  title="Blog — Aryze"
+  description="Practical perspectives on bank payments, digital money and the economics behind the route you choose."
+>
+  <PageHero
+    eyebrow="Blog"
+    title="Better payments start with better questions."
+    lede="Practical perspectives on bank payments, digital money and the economics behind the route you choose."
+  />
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        {posts.map((post) => <BlogCard {...post} />)}
+      </div>
+      <p class="blog-note muted">Press &amp; media: <a href="mailto:info@aryze.io">info@aryze.io</a></p>
+    </div>
+  </section>
+  <CtaPanel
+    title="Discuss your money flow."
+    text="Describe what needs to move, where it starts and where it must settle. We work out with you which product fits and who does what."
+    secondary={{ label: 'See how it works', href: '/how-it-works' }}
+  />
+</Base>
+
+<style>
+  .blog-note {
+    margin-top: 36px;
+    font-size: 0.9375rem;
+  }
+</style>

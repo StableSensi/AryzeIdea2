@@ -1,0 +1,20 @@
+---
+/**
+ * Closing call to action for product pages: the shared navy CtaPanel.
+ * primary defaults to Talk to Aryze → /contact; secondary is omitted unless
+ * given (the copy files name it when there is one).
+ */
+import CtaPanel from '../CtaPanel.astro';
+import type { Link } from './types';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  text?: string;
+  primary?: Link;
+  secondary?: Link;
+}
+const { eyebrow, title, text, primary = { label: 'Talk to Aryze', href: '/contact' }, secondary } = Astro.props;
+---
+
+<CtaPanel eyebrow={eyebrow} title={title} text={text} primary={primary} secondary={secondary ?? null} />

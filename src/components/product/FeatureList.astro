@@ -1,0 +1,42 @@
+---
+/** The global .features list for Item[]: strong title, muted text, optional chip and arrow link. */
+import ItemChip from './ItemChip.astro';
+import type { Item } from './types';
+interface Props {
+  items: Item[];
+}
+const { items } = Astro.props;
+---
+
+<ul class="features">
+  {
+    items.map((it) => (
+      <li>
+        <strong>{it.title}</strong>
+        {it.text && <span>{it.text}</span>}
+        {it.chip && (
+          <div class="feature-chip">
+            <ItemChip chip={it.chip} />
+          </div>
+        )}
+        {it.href && (
+          <div class="feature-link">
+            <a class="arrow-link" href={it.href}>
+              {it.linkLabel ?? it.title}
+            </a>
+          </div>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .feature-chip,
+  .feature-link {
+    margin-top: 8px;
+  }
+  .feature-link .arrow-link {
+    font-size: 0.875rem;
+  }
+</style>

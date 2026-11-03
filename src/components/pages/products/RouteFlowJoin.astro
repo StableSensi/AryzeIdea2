@@ -1,0 +1,63 @@
+---
+/**
+ * Half-round joint drawn over the divider between two steps of a
+ * joined .route-flow (Pay by Bank customer journey). Place it inside
+ * every <li> after the first; the parent list must make its <li>s
+ * position:relative.
+ *
+ * `step` is the 1-based step index; step 3 hides at tablet width where
+ * the list wraps into two columns.
+ */
+interface Props {
+  step: number;
+}
+const { step } = Astro.props;
+---
+
+<svg
+  class="route-flow-join"
+  data-step={step}
+  viewBox="-10 -10 20 20"
+  width="20"
+  height="20"
+  aria-hidden="true"
+  focusable="false"
+>
+  <rect class="route-flow-join__erase" x="-1.5" y="-7" width="3" height="14"></rect>
+  <path class="route-flow-join__line" d="M 0 -7 A 7 7 0 0 1 0 7"></path>
+</svg>
+
+<style>
+  .route-flow-join {
+    pointer-events: none;
+    width: 20px;
+    max-width: none;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    left: -0.5px;
+    overflow: visible;
+    transform: translate(-50%, -50%);
+  }
+  .route-flow-join__erase {
+    fill: var(--card, #fff);
+  }
+  .route-flow-join__line {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1px;
+    stroke-linecap: round;
+  }
+  @media (width<=900px) and (width>=541px) {
+    .route-flow-join[data-step="3"] {
+      display: none;
+    }
+  }
+  @media (width<=540px) {
+    .route-flow-join {
+      top: -0.5px;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+  }
+</style>

@@ -1,0 +1,26 @@
+---
+/**
+ * Aryze wordmark linking home.
+ * tone="dark" → dark wordmark for light backgrounds (header).
+ * tone="light" → light wordmark for the navy footer.
+ */
+interface Props {
+  tone?: 'dark' | 'light';
+}
+const { tone = 'dark' } = Astro.props;
+---
+
+<a href="/" class="logo" aria-label="Aryze home"><img src={`/brand/logo-wordmark-${tone}.svg`} alt="Aryze" height="26" /></a>
+
+<style>
+  .logo {
+    align-items: center;
+    line-height: 0;
+    display: inline-flex;
+    text-decoration: none !important;
+  }
+  .logo img {
+    width: auto;
+    height: 26px;
+  }
+</style>

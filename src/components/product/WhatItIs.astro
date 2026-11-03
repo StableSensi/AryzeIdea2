@@ -1,0 +1,35 @@
+---
+/**
+ * "What it is" section: eyebrow, h2, lede paragraphs, then an optional
+ * fold-out and arrow link. Default slot sits after the head (tables, diagrams).
+ */
+import SectionHead from './SectionHead.astro';
+import Foldout from './Foldout.astro';
+import { sectionClass, type Foldout as FoldoutData, type Link, type SectionTone } from './types';
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  body?: string | string[];
+  foldout?: FoldoutData;
+  link?: Link;
+  tone?: SectionTone;
+  id?: string;
+}
+const { eyebrow = 'What it is', title, body, foldout, link, tone = 'plain', id } = Astro.props;
+---
+
+<section class={sectionClass(tone)} id={id}>
+  <div class="container">
+    <SectionHead eyebrow={eyebrow} title={title} body={body} />
+    <slot />
+    {foldout && <Foldout foldout={foldout} />}
+    {link && <p class="product-section-link"><a class="arrow-link" href={link.href}>{link.label}</a></p>}
+  </div>
+</section>
+
+<style>
+  .product-section-link {
+    margin-top: 24px;
+  }
+</style>

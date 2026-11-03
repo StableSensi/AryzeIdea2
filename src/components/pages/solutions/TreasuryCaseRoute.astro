@@ -1,0 +1,89 @@
+---
+/**
+ * Three-piece horizontal route inside a Corporate Treasury case card
+ * (e.g. Group entity A → FX through MoneyOS → Group entity B). The middle
+ * piece is navy; each piece except the last carries a right-pointing join.
+ * Below a 24rem container width the pieces stack and the joins turn down.
+ */
+import PuzzleJoin from '../../PuzzleJoin.astro';
+
+interface Props {
+  /** Exactly three labels: origin, Aryze step (navy), destination. */
+  steps: [string, string, string];
+}
+
+const { steps } = Astro.props;
+---
+
+<div class="treasury-case-route">
+  <ol class="treasury-case-route__steps" role="list">
+    {
+      steps.map((label, i) => (
+        <li class:list={['treasury-case-route__piece', { 'treasury-case-route__piece--navy': i === 1 }]}>
+          {label}
+          {i < steps.length - 1 && <PuzzleJoin direction="right" />}
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .treasury-case-route {
+    --treasury-case-navy: #001e2b;
+    --treasury-case-grey: #dfe6e7;
+    --treasury-case-gutter: var(--bg, #f7f9fa);
+    width: 100%;
+    min-width: 0;
+    font-family: inherit;
+    font-weight: 400;
+    container-type: inline-size;
+  }
+  .treasury-case-route__steps {
+    --connector-radius: clamp(8px, 2.7cqi, 14px);
+    --connector-gutter: 2px;
+    gap: var(--connector-gutter);
+    background: var(--treasury-case-gutter);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 30px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+  .treasury-case-route__piece {
+    --treasury-case-piece: var(--treasury-case-grey);
+    --puzzle-join-fill: var(--treasury-case-piece);
+    --puzzle-join-gutter: var(--treasury-case-gutter);
+    background: var(--treasury-case-piece);
+    min-width: 0;
+    min-height: 4.5rem;
+    color: var(--treasury-case-navy);
+    --treasury-case-clear: max(
+      22px,
+      calc(var(--connector-radius) + var(--connector-gutter))
+    );
+    padding: 12px var(--treasury-case-clear);
+    text-align: center;
+    place-items: center;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.4;
+    display: grid;
+    position: relative;
+  }
+  .treasury-case-route__piece--navy {
+    --treasury-case-piece: var(--treasury-case-navy);
+    color: var(--text-inv);
+  }
+  @container (width<=24rem) {
+    .treasury-case-route__steps {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .treasury-case-route__piece {
+      padding: var(--treasury-case-clear) 22px;
+      --puzzle-join-x: 50%;
+      --puzzle-join-y: calc(100% + var(--connector-gutter) / 2);
+      --puzzle-join-turn: 180deg;
+    }
+  }
+</style>

@@ -1,0 +1,163 @@
+---
+/**
+ * Inner-page hero: eyebrow, h1, lede, optional status chips, and an optional
+ * photo (with optional LivingPhoto video overlay) in a two-column grid.
+ *
+ * Without `image` it renders the single-column "plain" layout used on 404,
+ * blog, contact, privacy and the trust pages.
+ */
+import LivingPhoto from './LivingPhoto.astro';
+import StatusChip from './StatusChip.astro';
+import type { ChipTone, ProductSlug } from '../data/products';
+
+export type ChipStatus = 'live' | 'partner' | 'pending';
+
+/**
+ * A hero chip. One of:
+ *   { label, status? }        legacy .chip (dot style), as on today's pages
+ *   { product: 'pay-by-bank' } StatusChip with the registry's §8.2 chip
+ *   { statusLabel, tone? }    StatusChip with free text (tone default neutral)
+ */
+export type HeroChip =
+  | { label: string; status?: ChipStatus }
+  | { product: ProductSlug }
+  | { statusLabel: string; tone?: ChipTone };
+
+interface Props {
+  eyebrow: string;
+  /** h1 text. A literal "\n" is kept in the markup (as on /company). */
+  title: string;
+  lede: string;
+  /** Background: plain (default), blue gradient, sand gradient or ink (navy). */
+  tone?: 'plain' | 'blue' | 'sand' | 'ink';
+  /** Chips under the lede. See HeroChip: legacy .chip, or a StatusChip from the registry or free text. */
+  chips?: HeroChip[];
+  image?: {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+    /** CSS object-position, default "50% 50%". Also used by the video overlay unless videoPosition is set. */
+    position?: string;
+  };
+  /** Video for the LivingPhoto overlay on the image, e.g. "/videos/city-living-60fps.mp4". */
+  video?: string;
+  /** Object-position for the video overlay when it differs from the image's. */
+  videoPosition?: string;
+}
+
+const { eyebrow, title, lede, tone = 'plain', chips = [], image, video, videoPosition } = Astro.props;
+const position = image?.position ?? '50% 50%';
+const sectionClass = ['page-hero', `page-hero--${tone}`, image && 'page-hero--visual'].filter(Boolean).join(' ');
+---
+
+<section class={sectionClass}>
+  <div class={image ? 'container page-hero-grid' : 'container'}>
+    <div class="page-hero-copy">
+      <span class="eyebrow">{eyebrow}</span>
+      <h1>{title}</h1>
+      <p class="lede">{lede}</p>
+      {
+        chips.length > 0 && (
+          <div class="chip-row">
+            {chips.map((c) =>
+              'product' in c ? (
+                <StatusChip product={c.product} />
+              ) : 'statusLabel' in c ? (
+                <StatusChip label={c.statusLabel} tone={c.tone} />
+              ) : (
+                <span class={c.status ? `chip chip--${c.status}` : 'chip'}>{c.label}</span>
+              ),
+            )}
+          </div>
+        )
+      }
+      <slot />
+    </div>
+    {
+      image && (
+        <figure class="page-hero-media">
+          <img
+            src={image.src}
+            alt={image.alt}
+            width={image.width ?? 1200}
+            height={image.height ?? 900}
+            style={`object-position:${position}`}
+            fetchpriority="high"
+          />
+          {video && <LivingPhoto src={video} position={videoPosition ?? position} radius="18px" />}
+        </figure>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    border-bottom: 1px solid var(--line-muted);
+    background: var(--bg);
+    padding: clamp(64px, 8vw, 104px) 0 clamp(40px, 5vw, 64px);
+  }
+  .page-hero--blue {
+    background: linear-gradient(135deg, var(--accent-bg), var(--bg) 62%);
+  }
+  .page-hero--sand {
+    background: linear-gradient(135deg, var(--sand), var(--bg) 68%);
+  }
+  .page-hero--ink {
+    background: var(--navy);
+    color: var(--text-inv);
+    border-color: var(--line-inv);
+  }
+  .page-hero--ink h1 {
+    color: var(--text-inv);
+  }
+  .page-hero--ink .lede,
+  .page-hero--ink .eyebrow {
+    color: var(--muted-inv);
+  }
+  .page-hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.82fr);
+    align-items: center;
+    gap: clamp(38px, 7vw, 96px);
+    display: grid;
+  }
+  .page-hero-copy {
+    min-width: 0;
+  }
+  h1 {
+    max-width: 14em;
+    font-size: clamp(2.2rem, 4.6vw, 3.4rem);
+  }
+  .lede {
+    max-width: 34em;
+  }
+  .chip-row {
+    margin-top: 28px;
+  }
+  .page-hero-media {
+    min-height: 0;
+    margin: 0;
+    position: relative;
+  }
+  .page-hero-media img {
+    object-fit: cover;
+    border-radius: 18px;
+    width: 100%;
+    height: clamp(300px, 34vw, 480px);
+    display: block;
+    box-shadow: 0 24px 70px #001e2b29;
+  }
+  .page-hero--ink .page-hero-media img {
+    box-shadow: 0 26px 80px #00000047;
+  }
+  @media (width<=820px) {
+    .page-hero-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+    .page-hero-media img {
+      height: clamp(250px, 62vw, 410px);
+    }
+  }
+</style>

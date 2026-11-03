@@ -1,0 +1,68 @@
+---
+/**
+ * "How it works" section: eyebrow, h2, optional lede, then the numbered
+ * .route-flow strip (01, 02 … from the order), an optional note paragraph,
+ * fold-out and arrow link. Works for 2–5 steps; wraps to 2 columns at 900px
+ * and 1 column at 540px, like today's route-flow.
+ */
+import SectionHead from './SectionHead.astro';
+import Foldout from './Foldout.astro';
+import { paragraphs, sectionClass, type Foldout as FoldoutData, type Link, type SectionTone, type StepItem } from './types';
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  body?: string | string[];
+  steps: StepItem[];
+  /** Paragraph(s) after the steps, in the .route-note style. */
+  note?: string | string[];
+  foldout?: FoldoutData;
+  link?: Link;
+  tone?: SectionTone;
+  id?: string;
+  /** aria-label for the list. */
+  label?: string;
+}
+const { eyebrow = 'How it works', title, body, steps, note, foldout, link, tone = 'card', id, label } = Astro.props;
+const cols = Math.min(Math.max(steps.length, 1), 5);
+---
+
+<section class={sectionClass(tone)} id={id}>
+  <div class="container">
+    <SectionHead eyebrow={eyebrow} title={title} body={body} />
+    <ol class="route-flow product-steps" style={`--step-cols:${cols}`} aria-label={label}>
+      {
+        steps.map((s, i) => (
+          <li>
+            <span class="route-number">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{s.title}</h3>
+            {s.text && <p>{s.text}</p>}
+          </li>
+        ))
+      }
+    </ol>
+    {paragraphs(note).map((p) => <p class="route-note">{p}</p>)}
+    {foldout && <Foldout foldout={foldout} />}
+    {link && <a class="arrow-link product-steps-link" href={link.href}>{link.label}</a>}
+  </div>
+</section>
+
+<style>
+  .product-steps {
+    grid-template-columns: repeat(var(--step-cols), minmax(0, 1fr));
+  }
+  .product-steps-link {
+    margin-top: 24px;
+    display: inline-block;
+  }
+  @media (width<=900px) {
+    .product-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (width<=540px) {
+    .product-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

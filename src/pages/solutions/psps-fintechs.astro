@@ -1,0 +1,227 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import StatusChip from '../../components/StatusChip.astro';
+import MerchantRoute from '../../components/pages/solutions/MerchantRoute.astro';
+import { getProduct, type ProductSlug } from '../../data/products';
+
+const productOptions: { product: ProductSlug; link: string }[] = [
+  { product: 'pay-by-bank', link: 'Explore bank payments' },
+  { product: 'pay-by-crypto', link: 'Explore crypto acceptance' },
+];
+const productCards = productOptions.map((o) => ({ ...o, p: getProduct(o.product) })).filter((o) => !o.p.draft);
+
+const flows = [
+  {
+    title: 'Checkout',
+    text: 'A one-off purchase moves from payment choice to bank or provider approval and back to the order.',
+  },
+  {
+    title: 'Deposit',
+    text: 'A funded account or eligible gaming deposit receives payment status inside the operator’s existing cashier or wallet experience.',
+  },
+  {
+    title: 'Collection',
+    text: 'A payment request, reference and settlement result connect to the platform’s reconciliation flow.',
+  },
+];
+
+const checkoutSteps = ['Order created', 'Bank approval', 'Signed payment notification', 'Order status updated'];
+const nn = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<Base
+  title="For PSPs & Payment Platforms — Aryze"
+  description="Add bank payments in the UK and the EU to your checkout, and scope the next route your merchants ask for, with status and records back in your platform."
+>
+  <PageHero
+    tone="sand"
+    eyebrow="Solutions · PSPs & Payment Platforms"
+    title="Where do your merchants need to go next?"
+    lede="Aryze adds bank payments in the UK and the EU inside the checkout you already run, and scopes the next route your merchants ask for."
+    image={{
+      src: '/images/solutions/fintechs.webp',
+      alt: 'A professional crossing a bridge in Copenhagen',
+      position: '50% 46%',
+    }}
+    video="/videos/fintechs-living-60fps.mp4"
+    videoPosition="100% 46%"
+  />
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Route and record</span>
+        <h2>Payment status reports back to your platform.</h2>
+        <p class="lede">Status, exceptions and reconciliation come back into the platform your merchants already use.</p>
+      </div>
+      <MerchantRoute />
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Payment options</span>
+        <h2>Start with bank payments.<br />Scope the next route.</h2>
+      </div>
+      <div class="route-grid">
+        {
+          productCards.map((o) => (
+            <article class="route-panel option">
+              <h3>{o.p.name}</h3>
+              <div class="option-chip">
+                <StatusChip product={o.p.slug} />
+              </div>
+              {o.p.oneLiner && <p>{o.p.oneLiner}</p>}
+              <a class="arrow-link" href={o.p.url}>{o.link}</a>
+            </article>
+          ))
+        }
+        <article class="route-panel option">
+          <h3>The next route</h3>
+          <span class="route-proof-label option-tag">Scoped per engagement</span>
+          <p>A market, method or settlement destination you do not yet cover.</p>
+          <a class="arrow-link" href="/consulting">Discuss a route</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="merchant-flows">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Merchant applications</span>
+        <h2>One payment layer, three ways to use it.</h2>
+      </div>
+      <div class="merchant-flows">
+        {
+          flows.map((f, i) => (
+            <article>
+              <span>{nn(i)}</span>
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sand">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Checkout integration</span>
+        <h2>From order to payment status.</h2>
+        <p class="lede">A recorded integration connected the order, bank approval and signed status update.</p>
+      </div>
+      <div class="checkout-flow">
+        <span>Recorded WooCommerce + Open Banking sandbox integration</span>
+        <ol>
+          {
+            checkoutSteps.map((s, i) => (
+              <li>
+                <b>{nn(i)}</b>
+                <strong>{s}</strong>
+              </li>
+            ))
+          }
+        </ol>
+        <small>
+          Recorded integration environment. Settlement coverage, refunds, service levels and provider responsibilities are agreed per deployment.
+        </small>
+      </div>
+    </div>
+  </section>
+
+  <CtaPanel
+    title="Which route are your merchants asking for?"
+    text="Bring the market, payment type and destination. We map the route with you."
+    primary={{ label: 'Discuss the route', href: '/contact' }}
+    secondary={{ label: 'How MoneyOS fits', href: '/how-it-works' }}
+  />
+</Base>
+
+<style>
+  /* The in-build option must not look featured next to the live one. */
+  .route-grid > .route-panel.option:nth-child(2) {
+    background: var(--card);
+  }
+
+  .option {
+    flex-direction: column;
+    display: flex;
+  }
+  .option-chip,
+  .option-tag {
+    margin-bottom: 14px;
+  }
+  .option-tag {
+    align-self: flex-start;
+  }
+  .option .arrow-link {
+    margin-top: auto;
+    padding-top: 8px;
+  }
+  .merchant-flows {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    display: grid;
+  }
+  .merchant-flows article {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 14px;
+    padding: clamp(22px, 3vw, 30px);
+  }
+  .merchant-flows span {
+    font: 0.6875rem var(--mono);
+    color: var(--cta);
+  }
+  .merchant-flows h3 {
+    margin-top: 28px;
+    font-size: 1.2rem;
+  }
+  .merchant-flows p {
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+  .checkout-flow {
+    background: var(--card);
+    border: 1px solid var(--sand-2);
+    border-radius: 16px;
+    padding: clamp(24px, 4vw, 38px);
+  }
+  .checkout-flow > span,
+  .checkout-flow small {
+    font: 0.8125rem/1.5 var(--font);
+    color: var(--muted);
+  }
+  .checkout-flow ol {
+    margin: 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .checkout-flow li {
+    border-top: 1px solid var(--line-muted);
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    padding: 14px 0;
+    display: grid;
+  }
+  .checkout-flow li b {
+    font: 0.625rem var(--mono);
+    color: var(--cta);
+  }
+  .checkout-flow li strong {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  @media (width<=760px) {
+    .merchant-flows {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

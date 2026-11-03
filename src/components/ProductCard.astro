@@ -1,0 +1,55 @@
+---
+/**
+ * Product card: a linked .card with the product name, its §8.1 one-liner and
+ * its §8.2 StatusChip, all from the registry. Draft products render nothing
+ * (no internal links to drafts).
+ */
+import StatusChip from './StatusChip.astro';
+import { getProduct, type ProductSlug } from '../data/products';
+
+interface Props {
+  product: ProductSlug;
+  /** Heading level for the name. Default h3. */
+  headingLevel?: 'h3' | 'h4';
+}
+
+const { product, headingLevel = 'h3' } = Astro.props;
+const p = getProduct(product);
+const Heading = headingLevel;
+---
+
+{
+  !p.draft && (
+    <a class="card product-card" href={p.url}>
+      <Heading class="product-card__name">{p.name}</Heading>
+      {p.oneLiner && <p>{p.oneLiner}</p>}
+      {
+        p.chip && (
+          <div class="product-card__status">
+            <StatusChip product={p.slug} />
+          </div>
+        )
+      }
+    </a>
+  )
+}
+
+<style>
+  .product-card {
+    flex-direction: column;
+    height: 100%;
+    display: flex;
+  }
+  .product-card__name {
+    margin-bottom: 8px;
+    font-size: 1.25rem;
+  }
+  .product-card p {
+    margin-bottom: 0;
+  }
+  /* Rendered only for products with a chip; the gap above it lives here. */
+  .product-card__status {
+    margin-top: auto;
+    padding-top: 20px;
+  }
+</style>

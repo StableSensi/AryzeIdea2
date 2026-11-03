@@ -1,0 +1,136 @@
+---
+/**
+ * Home route selector, "A capability customers want": the bank keeps its
+ * relationship and core, customer demand sits beside the core, and the Aryze
+ * infrastructure slots in underneath with a puzzle tab pointing left into the core.
+ *
+ * Geometry (design units): two columns 720 / 625 wide; rows 188, 220 and 264
+ * high. Row heights are expressed as container-query widths (cqi) so the
+ * figure keeps its proportions at any width.
+ */
+import PuzzleJoin from '../../PuzzleJoin.astro';
+
+interface Props {
+  label: string;
+  /** Label of the fourth (Aryze) piece. */
+  addedLabel?: string;
+}
+const { label, addedLabel = 'Aryze infrastructure' } = Astro.props;
+
+const COLUMNS = [720, 625];
+const ROWS = { top: 188, demand: 220, added: 264 };
+const total = COLUMNS[0] + COLUMNS[1];
+const cqi = (h: number) => `${(h * 100) / total}cqi`;
+
+const style =
+  `--route-fit-columns:${COLUMNS[0]}fr ${COLUMNS[1]}fr;` +
+  `--route-fit-top:${cqi(ROWS.top)};` +
+  `--route-fit-demand:${cqi(ROWS.demand)};` +
+  `--route-fit-added:${cqi(ROWS.added)};` +
+  `--route-fit-radius:var(--connector-radius);` +
+  `--route-fit-gap:var(--connector-gutter);`;
+---
+
+<figure class="route-bank-fit" style={style} aria-label={label}>
+  <ol aria-label="Your customer and your core system stay as they are. Aryze infrastructure fits in beside them for what the customer asks for.">
+    <li class="route-bank-fit__relationship">
+      <svg class="route-bank-fit__body" aria-hidden="true" focusable="false"><rect width="100%" height="100%"></rect></svg>
+      <span>Your customer</span>
+    </li>
+    <li class="route-bank-fit__core">
+      <svg class="route-bank-fit__body" aria-hidden="true" focusable="false"><rect width="100%" height="100%"></rect></svg>
+      <span>Your core system</span>
+    </li>
+    <li class="route-bank-fit__demand">
+      <svg class="route-bank-fit__body" aria-hidden="true" focusable="false"><rect width="100%" height="100%"></rect></svg>
+      <span>What they ask for</span>
+    </li>
+    <li class="route-bank-fit__aryze">
+      <svg class="route-bank-fit__body" aria-hidden="true" focusable="false"><rect width="100%" height="100%"></rect></svg>
+      <PuzzleJoin direction="left" />
+      <span>{addedLabel}</span>
+    </li>
+  </ol>
+</figure>
+
+<style>
+  .route-bank-fit {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    container-type: inline-size;
+  }
+
+  ol {
+    isolation: isolate;
+    grid-template-columns: var(--route-fit-columns);
+    grid-template-rows:
+      minmax(var(--route-fit-top), auto)
+      minmax(var(--route-fit-demand), auto)
+      minmax(var(--route-fit-added), auto);
+    color: #001e2b;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+
+  li {
+    --route-fit-fill: #d4e4f1;
+    --puzzle-join-fill: var(--route-fit-fill);
+    --puzzle-join-gutter: #f7f9fa;
+    align-items: center;
+    min-width: 0;
+    padding: max(0.75rem, 3.5cqi);
+    font-size: clamp(0.875rem, 4cqi, 1.5rem);
+    font-weight: 400;
+    line-height: 1.35;
+    display: flex;
+    position: relative;
+  }
+
+  .route-bank-fit__body {
+    inset: calc(var(--route-fit-gap) / 2);
+    width: calc(100% - var(--route-fit-gap));
+    height: calc(100% - var(--route-fit-gap));
+    fill: var(--route-fit-fill);
+    pointer-events: none;
+    position: absolute;
+  }
+
+  span {
+    z-index: 1;
+    overflow-wrap: anywhere;
+    position: relative;
+  }
+
+  .route-bank-fit__relationship {
+    grid-area: 1 / 1 / 2 / -1;
+  }
+
+  .route-bank-fit__core {
+    --route-fit-fill: #e1e8e9;
+    grid-area: 2 / 1 / 4 / 2;
+    padding-inline-end: calc(var(--route-fit-radius) + max(0.75rem, 3.5cqi));
+  }
+
+  .route-bank-fit__demand {
+    grid-area: 2 / 2 / 3 / 3;
+  }
+
+  .route-bank-fit__aryze {
+    --route-fit-fill: #007599;
+    color: #f7f9fa;
+    grid-area: 3 / 2 / 4 / 3;
+  }
+
+  @container (width <= 15rem) {
+    .route-bank-fit__demand,
+    .route-bank-fit__aryze {
+      padding-inline: max(1cqi, calc(var(--route-fit-gap) / 2 + 1px));
+    }
+    .route-bank-fit__core {
+      padding-inline-end: calc(var(--route-fit-radius) + var(--route-fit-gap));
+    }
+  }
+</style>

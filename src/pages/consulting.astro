@@ -1,0 +1,201 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ContactForm from '../components/ContactForm.astro';
+import StepQuestions from '../components/pages/house/StepQuestions.astro';
+
+const EMAIL = 'info@aryze.io';
+
+const steps = [
+  {
+    title: 'Understand the need.',
+    text: 'Customer problem, existing systems and the result that would make a difference.',
+  },
+  {
+    title: 'Define the work.',
+    text: 'Scope, responsibilities, price and acceptance criteria agreed before building.',
+  },
+  {
+    title: 'Build and decide.',
+    text: 'A working prototype, evidence of its results and a clear decision about production.',
+  },
+];
+
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base
+  title="Consulting — scope it with us — Aryze"
+  description="Bring the customer need and the systems you want to keep. Together we work out which Aryze product fits, or whether one does."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Consulting"
+    title="Still not sure what you need? Let us scope it with you."
+    lede="Tell us what your customers are asking for and what you run today. Together we work out which product fits — or whether one does."
+  />
+
+  <section class="section section--sand">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">What follows</span>
+        <h2>A conversation before a commitment.</h2>
+        <p class="lede">
+          We first establish whether Aryze is the right fit. If it is, the work starts with an agreed, paid scoping and
+          MVP engagement.
+        </p>
+      </div>
+      <ol class="consulting-steps">
+        {
+          steps.map((s, i) => (
+            <li>
+              <span>{pad(i + 1)}</span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container consulting-story">
+      <div>
+        <span class="eyebrow">How we work</span>
+        <h2>Your customers’ needs.<br />Our starting point.</h2>
+      </div>
+      <div>
+        <p class="lede">
+          We agree with you what the first version must do and what counts as a good result. We build it, you inspect it, and then you decide what happens next.
+        </p>
+        <details class="route-evidence">
+          <summary>How responsibilities are assigned</summary>
+          <p>
+            Aryze runs the technology work you agree on. Banking, payment and other regulated steps are carried out by your institution or the licensed provider you choose.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container consulting-story">
+      <div>
+        <span class="eyebrow">Where to start</span>
+        <h2>Start at the step your money is at.</h2>
+      </div>
+      <StepQuestions formId="scope" />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container diligence">
+      <div>
+        <h2>Already in due diligence?</h2>
+        <p>
+          Ask about the architecture, technical evidence and the regulatory or backing arrangements relevant to your
+          route.
+        </p>
+      </div>
+      <a class="btn btn--ghost" href={`mailto:${EMAIL}?subject=${encodeURIComponent('Due diligence enquiry')}`}
+        >Request an evidence discussion ↗</a
+      >
+    </div>
+  </section>
+
+  <section class="section section--sand">
+    <div class="container scope-form">
+      <ContactForm
+        id="scope"
+        eyebrow="Scope it with us"
+        title="Tell us the problem."
+        subject="Scoping request (Consulting page)"
+        messageLabel="What's the problem?"
+        messageHint="The payment, market or step that isn't working today. A few lines are enough."
+      />
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The form card lines up with the left edge like every other block; only the card is capped. */
+  .scope-form :global(.form-card) {
+    max-width: 760px;
+  }
+
+  .consulting-steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+
+  .consulting-steps li {
+    border-top: 1px solid #001e2b25;
+    padding-top: 24px;
+  }
+
+  .consulting-steps span {
+    font: 0.6875rem var(--mono);
+    color: var(--cta);
+  }
+
+  .consulting-steps h3 {
+    margin-top: 20px;
+    font-size: 1.125rem;
+  }
+
+  .consulting-steps p {
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  .consulting-story {
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    display: grid;
+  }
+
+  .consulting-story p {
+    line-height: 1.7;
+  }
+
+  .diligence {
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    display: flex;
+  }
+
+  .diligence h2 {
+    font-size: 1.5rem;
+  }
+
+  .diligence p {
+    max-width: 40em;
+    font-size: 0.9375rem;
+  }
+
+  .diligence .btn {
+    flex-shrink: 0;
+  }
+
+  @media (width <= 850px) {
+    .consulting-steps {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .consulting-story {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .diligence {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+    }
+  }
+</style>

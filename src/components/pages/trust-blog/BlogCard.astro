@@ -1,0 +1,55 @@
+---
+/** Card on the /blog index (live cid vqljwchw): chip + mono date line, h2, excerpt, "Read" arrow. */
+interface Props {
+  href: string;
+  category: string;
+  /** Short display date, e.g. "22 Jun 2026". */
+  date: string;
+  readTime: string;
+  title: string;
+  excerpt: string;
+}
+
+const { href, category, date, readTime, title, excerpt } = Astro.props;
+---
+
+<a href={href} class="card blog-card">
+  <p class="blog-meta"><span class="chip">{category}</span><span class="mono">{date} · {readTime}</span></p>
+  <h2>{title}</h2>
+  <p>{excerpt}</p>
+  <span class="arrow-link">Read</span>
+</a>
+
+<style>
+  .blog-card {
+    flex-direction: column;
+    gap: 10px;
+    display: flex;
+  }
+  .blog-meta {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    display: flex;
+  }
+  .blog-meta .mono {
+    color: var(--muted);
+    white-space: nowrap;
+    font-size: 0.75rem;
+  }
+  .blog-card h2 {
+    letter-spacing: -0.01em;
+    margin: 0;
+    font-size: 1.1875rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .blog-card > p:not(.blog-meta) {
+    margin: 0;
+  }
+  .blog-card .arrow-link {
+    margin-top: auto;
+    padding-top: 6px;
+  }
+</style>

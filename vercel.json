@@ -1,0 +1,7 @@
+{
+  "redirects": [
+    { "source": "/products/pay-by-wallet", "destination": "/products/pay-by-crypto", "permanent": true },
+    { "source": "/products/trading-fx", "destination": "/products/on-chain-fx", "permanent": true },
+    { "source": "/platform", "destination": "/how-it-works", "permanent": true }
+  ]
+}

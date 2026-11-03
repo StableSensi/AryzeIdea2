@@ -1,0 +1,29 @@
+---
+/**
+ * The products a solution page uses: given product slugs, renders their
+ * ProductCards (name, one-liner, StatusChip) in a grid. Drafts are dropped.
+ * Renders no <section>: wrap it in the page's own section and section-head.
+ */
+import ProductCard from './ProductCard.astro';
+import { getProduct, type ProductSlug } from '../data/products';
+
+interface Props {
+  products: ProductSlug[];
+  /** Columns at desktop. Default: 3, or 2 when exactly two or four products are shown. */
+  columns?: 2 | 3 | 4;
+}
+
+const { products } = Astro.props;
+const shown = products.map(getProduct).filter((p) => !p.draft);
+const columns = Astro.props.columns ?? (shown.length === 2 || shown.length === 4 ? 2 : 3);
+---
+
+{
+  shown.length > 0 && (
+    <div class={`grid grid--${columns} solution-products`}>
+      {shown.map((p) => (
+        <ProductCard product={p.slug} />
+      ))}
+    </div>
+  )
+}

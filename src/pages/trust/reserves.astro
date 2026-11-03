@@ -1,0 +1,120 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import { getProduct } from '../../data/products';
+
+const digitalCash = getProduct('digital-cash');
+
+const questions = [
+  { title: 'Who issues?', text: 'Identify the issuer, its authorisation and the legal claim the holder receives.' },
+  {
+    title: 'What backs it?',
+    text: 'Identify eligible assets, the reserve holder, valuation and any applicable safeguarding structure.',
+  },
+  {
+    title: 'How is it checked?',
+    text: 'Read the actual report, date, entity and engagement scope. Determine which balances and obligations it covers.',
+  },
+  {
+    title: 'How is it redeemed?',
+    text: 'Establish eligibility, timing, fees, funding and the party responsible for paying the holder.',
+  },
+];
+---
+
+<Base
+  title="Backing & redemption — Aryze"
+  description="An issued unit needs a defined claim. The backing, the responsible issuer and the redemption terms, not just the number of units on a network."
+>
+  <PageHero
+    eyebrow="Trust · Backing & redemption"
+    title="An issued unit needs a defined claim."
+    lede="Understand the backing, the responsible issuer and the redemption terms, not just the number of units on a network."
+  />
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Issuance on demand</span>
+        <h2>Transaction demand does not replace funding.</h2>
+        <p class="lede">
+          With {digitalCash.name}, the issuer issues units when a transaction needs them, against confirmed eligible
+          backing under the agreed arrangement. That avoids requiring a large standing token inventory; it does not create
+          unbacked purchasing power. In a {digitalCash.name} arrangement, Aryze does not hold the reserves. The reserve
+          holder is defined for each arrangement.
+        </p>
+        <p>
+          For cross-currency conversion, the backing and any currency exposure must be accounted for alongside the
+          burn/mint step. Redemption retires units and releases value under the issuer’s terms; the bank or payment
+          provider completes the fiat credit.
+        </p>
+        <a class="arrow-link" href={digitalCash.url}>How {digitalCash.name} works</a>
+      </div>
+      <div class="route-panel">
+        <h3>Supply visibility is not reserve proof.</h3>
+        <p>
+          On-chain records can show issued units and token movements. They do not, by themselves, verify bank balances,
+          reserve ownership, asset quality, encumbrances or the ability to redeem.
+        </p>
+        <p>A sandbox/testnet demonstration does not establish real fiat backing.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Inspect the arrangement</span>
+        <h2>Four questions before relying on the money.</h2>
+      </div>
+      <ol class="route-flow">
+        {
+          questions.map((q, i) => (
+            <li>
+              <span class="route-number">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{q.title}</h3>
+              <p>{q.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Financial assurance</span>
+        <h2>Past assurance is not current assurance.</h2>
+        <p class="lede">
+          Earlier assurance work does not establish current assurance, a security audit or assurance for every client
+          deployment.
+        </p>
+        <p>
+          For due diligence, ask which entity and arrangement an available report covers, its period and the work
+          performed. No universal monthly attestation, current reserve balance or public report availability is
+          promised here.
+        </p>
+      </div>
+      <div class="route-panel">
+        <h3>Reference implementations are technology evidence.</h3>
+        <p>
+          Euro, dollar, sterling and gold implementations demonstrate issuance technology. They do not establish current
+          reserve size, circulation, retail availability or exchange listings.
+        </p>
+        <p>
+          A specific arrangement needs its own current evidence. Applicable reports can be discussed and shared where
+          available and appropriate.
+        </p>
+        <a class="arrow-link" href="/trust/licenses">Understand the issuer’s role</a>
+      </div>
+    </div>
+  </section>
+
+  <CtaPanel
+    title="Inspect the backing for your arrangement."
+    text="Bring the issuer, instrument and redemption model you are evaluating. We can discuss the relevant structure and any assurance evidence available."
+    secondary={{ label: 'How it works', href: '/how-it-works' }}
+  />
+</Base>

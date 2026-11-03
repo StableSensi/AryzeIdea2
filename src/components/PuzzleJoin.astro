@@ -1,0 +1,72 @@
+---
+/**
+ * Round "jigsaw tab" that joins two puzzle pieces in the connector diagrams.
+ * Absolutely positioned (centre on the anchor point) inside a positioned
+ * piece. Colours come from inherited custom properties set by the parent:
+ *   --puzzle-join-fill    tab fill (default currentColor)
+ *   --puzzle-join-gutter  outline colour (default var(--bg))
+ * A parent can also override the position with --puzzle-join-x / -y / -turn.
+ *
+ * Props:
+ *   direction  which way the tab points: up | right | down | left
+ *   x, y       anchor point inside the parent (CSS lengths/percentages);
+ *              defaults depend on direction (the edge midpoint).
+ */
+type Direction = 'up' | 'right' | 'down' | 'left';
+interface Props {
+  direction: Direction;
+  x?: string;
+  y?: string;
+}
+
+const DEFAULTS: Record<Direction, { x: string; y: string; turn: string }> = {
+  up: { x: '50%', y: '0%', turn: '0deg' },
+  right: { x: 'calc(100% + var(--connector-gutter) / 2)', y: '50%', turn: '90deg' },
+  down: { x: '50%', y: '100%', turn: '180deg' },
+  left: { x: '0%', y: '50%', turn: '270deg' },
+};
+
+const { direction } = Astro.props;
+const d = DEFAULTS[direction];
+const x = Astro.props.x ?? d.x;
+const y = Astro.props.y ?? d.y;
+const style = `--puzzle-join-at-x:${x};--puzzle-join-at-y:${y};--puzzle-join-at-turn:${d.turn};`;
+---
+
+<svg
+  class="puzzle-join"
+  data-direction={direction}
+  style={style}
+  viewBox="-1.25 -1.25 2.5 2.5"
+  preserveAspectRatio="xMidYMid meet"
+  aria-hidden="true"
+  focusable="false"
+  ><path class="puzzle-join__tab" d="M -1.25 0 H -1 A 1 1 0 0 1 1 0 H 1.25 V .25 H -1.25 Z"></path><path
+    class="puzzle-join__gutter"
+    d="M -1.25 0 H -1 A 1 1 0 0 1 1 0 H 1.25"></path></svg
+>
+
+<style>
+  .puzzle-join {
+    z-index: 1;
+    left: var(--puzzle-join-x, var(--puzzle-join-at-x));
+    top: var(--puzzle-join-y, var(--puzzle-join-at-y));
+    width: calc(2.5 * var(--connector-radius));
+    height: calc(2.5 * var(--connector-radius));
+    pointer-events: none;
+    max-width: none;
+    transform: translate(-50%, -50%)
+      rotate(var(--puzzle-join-turn, var(--puzzle-join-at-turn)));
+    position: absolute;
+    overflow: visible;
+  }
+  .puzzle-join__tab {
+    fill: var(--puzzle-join-fill, currentColor);
+  }
+  .puzzle-join__gutter {
+    fill: none;
+    stroke: var(--puzzle-join-gutter, var(--bg));
+    stroke-width: var(--connector-gutter);
+    vector-effect: non-scaling-stroke;
+  }
+</style>

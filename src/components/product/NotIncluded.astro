@@ -1,0 +1,56 @@
+---
+/**
+ * "What's not included" section: the limits in one bordered .route-panel,
+ * using the .features list, with an optional arrow link under it.
+ */
+import SectionHead from './SectionHead.astro';
+import FeatureList from './FeatureList.astro';
+import { sectionClass, type Item, type Link, type SectionTone } from './types';
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  body?: string | string[];
+  items: Item[];
+  link?: Link;
+  tone?: SectionTone;
+  id?: string;
+}
+const {
+  eyebrow = "What's not included",
+  title = 'The limits, in one place.',
+  body,
+  items,
+  link,
+  tone = 'card',
+  id,
+} = Astro.props;
+---
+
+<section class={sectionClass(tone)} id={id}>
+  <div class="container">
+    <SectionHead eyebrow={eyebrow} title={title} body={body} />
+    <div class="route-panel limits">
+      <FeatureList items={items} />
+    </div>
+    {link && <a class="arrow-link not-included-link" href={link.href}>{link.label}</a>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .not-included-link {
+    margin-top: 24px;
+    display: inline-block;
+  }
+  /* Limits get a short dash, not the square "included" marker of .features. */
+  .limits :global(.features li::before) {
+    background: none;
+    border: 0;
+    border-top: 1.5px solid var(--muted);
+    border-radius: 0;
+    width: 12px;
+    height: 0;
+    top: 0.8em;
+  }
+</style>

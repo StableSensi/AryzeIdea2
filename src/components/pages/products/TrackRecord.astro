@@ -1,0 +1,72 @@
+---
+/**
+ * The track-record rows, always shown together, each with its status as a
+ * neutral StatusChip. Worded as in the NFW brochure and the approved
+ * company-page copy; SYNC is named because it was announced in public, the
+ * other counterparties are not named.
+ */
+import StatusChip from '../../StatusChip.astro';
+
+interface Props {
+  /** Optional line after the list, e.g. "Aryze, since 2017." */
+  note?: string;
+}
+const { note } = Astro.props;
+const rows = [
+  { work: 'Payments infrastructure for a neobank in Canada, built on the settlement layer', status: 'Signed · in build' },
+  { work: 'Digital asset infrastructure inside SYNC, a secure communications platform in Singapore', status: 'Announced · Sept 2026' },
+  { work: 'Cross-border settlement between two institutions, with fiat on both sides', status: 'Signed' },
+  { work: 'Conversion of value from one network to another', status: 'Delivered' },
+  { work: 'Asset tokens for several partners in commodities', status: 'Delivered' },
+];
+---
+
+<ul class="track-record">
+  {
+    rows.map((r) => (
+      <li>
+        <span class="track-record__work">{r.work}</span>
+        <StatusChip label={r.status} />
+      </li>
+    ))
+  }
+</ul>
+{note && <p class="track-record__note">{note}</p>}
+
+<style>
+  .track-record {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+  }
+  .track-record li {
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 24px;
+    padding: 20px 28px;
+    display: flex;
+  }
+  .track-record li + li {
+    border-top: 1px solid var(--line);
+  }
+  .track-record__work {
+    color: var(--navy);
+    font-weight: 500;
+  }
+  .track-record__note {
+    color: var(--muted);
+    margin-top: 20px;
+    font-size: 0.875rem;
+  }
+  @media (width<=640px) {
+    .track-record li {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 18px 20px;
+    }
+  }
+</style>

@@ -1,0 +1,131 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ContactForm from '../components/ContactForm.astro';
+import StepQuestions from '../components/pages/house/StepQuestions.astro';
+import { contactEmail } from '../data/site';
+---
+
+<Base
+  title="Contact — Aryze"
+  description="Tell us what your customers need, what you already have and where the current route falls short. Write to us here or at info@aryze.io."
+>
+  <PageHero
+    eyebrow="Contact"
+    title="What do you need the money to do?"
+    lede="Tell us what your customers need, what you already have and where the current route falls short. A few lines are enough to start."
+  />
+
+  <section class="section">
+    <div class="container contact-layout">
+      <ContactForm
+        id="form"
+        eyebrow="Talk to Aryze"
+        title="Write to us."
+        subject="Website enquiry (Contact page)"
+        messageLabel="What do you need?"
+        messageHint="Describe it the way you'd explain it to a colleague."
+      />
+      <div class="contact-side">
+        <StepQuestions heading="A useful place to start." formId="form" />
+        <div class="email-panel">
+          <span class="eyebrow">Prefer email?</span>
+          <a class="email-address" href={`mailto:${contactEmail}`}>{contactEmail} <span aria-hidden="true">↗</span></a>
+          <address>Aryze ApS · CVR 38895052<br />Bredgade 3, 2.<br />1260 Copenhagen K, Denmark</address>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container not-sure">
+      <p>Not sure what you need yet? Let us scope it with you.</p>
+      <a class="arrow-link" href="/consulting">See how consulting works</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Both columns share the row height: the form card stretches (its message
+     field takes the extra height) and the email panel sits at the bottom, so
+     the two columns start and end on the same lines. */
+  .contact-layout {
+    grid-template-columns: 1.15fr 1fr;
+    align-items: stretch;
+    gap: clamp(40px, 6vw, 80px);
+    display: grid;
+  }
+
+  .contact-side {
+    grid-template-rows: auto 1fr;
+    gap: 40px;
+    display: grid;
+  }
+
+  .contact-side .email-panel {
+    align-self: end;
+  }
+
+  .email-panel {
+    background: var(--navy);
+    color: var(--text-inv);
+    border-radius: 6px;
+    align-self: start;
+    padding: 40px;
+  }
+
+  .email-panel .eyebrow {
+    color: var(--muted-inv);
+  }
+
+  .email-panel h2 {
+    color: var(--text-inv);
+  }
+
+  .email-address {
+    color: var(--text-inv);
+    letter-spacing: -0.03em;
+    border-bottom: 1px solid var(--line-inv);
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 0;
+    font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+    display: flex;
+  }
+
+  .email-address {
+    margin-bottom: 20px;
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+  }
+
+  .email-panel address {
+    color: var(--muted-inv);
+    font-size: 0.75rem;
+    font-style: normal;
+    line-height: 1.8;
+  }
+
+  @media (width <= 850px) {
+    .contact-layout {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .email-panel {
+      padding: 28px;
+    }
+  }
+
+  .not-sure {
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px 24px;
+    padding-top: 28px;
+    display: flex;
+  }
+
+  .not-sure p {
+    margin: 0;
+    font-size: 1.0625rem;
+  }
+</style>

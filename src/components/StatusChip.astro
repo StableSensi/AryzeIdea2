@@ -1,0 +1,63 @@
+---
+/**
+ * Status chip (build plan §7.5): typographic, mono, uppercase, small.
+ * Live tone: background --mint-tint, text --navy. Neutral tone (every other
+ * chip): background --card, 1px --line border, text --muted.
+ *
+ * Pass `product` to read the chip text and tone from the registry, or `label`
+ * (+ optional `tone`, default neutral) for a free-text status such as
+ * "Pilot, activated per named merchant". Renders nothing when there is no
+ * text (a draft product without an approved chip).
+ */
+import { getProduct, type ChipTone, type ProductSlug } from '../data/products';
+
+interface Props {
+  product?: ProductSlug;
+  label?: string;
+  tone?: ChipTone;
+  class?: string;
+}
+
+const { product, label, tone, class: extra } = Astro.props;
+const p = product ? getProduct(product) : undefined;
+const text = label ?? p?.chip ?? null;
+const resolvedTone: ChipTone = tone ?? p?.chipTone ?? 'neutral';
+---
+
+{
+  text && (
+    <span class:list={['status-chip', `status-chip--${resolvedTone}`, extra]}>{text}</span>
+  )
+}
+
+<style>
+  .status-chip {
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1.3;
+    display: inline-flex;
+  }
+  .status-chip--live {
+    background: var(--mint-tint);
+    color: var(--navy);
+  }
+  .status-chip--neutral {
+    background: var(--card);
+    border-color: var(--line);
+    color: var(--muted);
+  }
+  @media (width<=640px) {
+    .status-chip {
+      white-space: normal;
+      max-width: 100%;
+    }
+  }
+</style>

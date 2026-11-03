@@ -1,0 +1,251 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import StatusChip from '../../components/StatusChip.astro';
+import BankAssembly from '../../components/pages/solutions/BankAssembly.astro';
+import { getProduct, type ProductSlug } from '../../data/products';
+
+const situations: { title: string; text: string; product: ProductSlug }[] = [
+  {
+    title: 'A stablecoin payment the bank can’t accept.',
+    text: 'The client holds the coin. Screening and a price lock come first, the conversion runs as one all-or-nothing motion, and ordinary money lands on an ordinary account. Your bank never holds a wallet, keys or a digital asset.',
+    product: 'walletless-settlement',
+  },
+  {
+    title: 'A corridor the incumbent rails don’t reach.',
+    text: 'Currency pairs outside the free instant rails, weekends and off-hours, thin or expensive correspondent coverage, and money parked abroad to keep a corridor open. One rate end to end, and local money at each end. Where a free instant rail already covers the pair, that rail wins.',
+    product: 'on-chain-fx',
+  },
+  {
+    title: 'A network membership with nothing behind it yet.',
+    text: 'The network’s coin sits in your bank’s own vault. Against it, the bank’s own token is issued one-to-one under the bank’s own keys, and the settlement layer sits beside the unchanged core.',
+    product: 'blockchain-connector',
+  },
+];
+// Drafts (e.g. a future Tokenization card) never render here.
+const cards = situations.map((s) => ({ ...s, p: getProduct(s.product) })).filter((s) => !s.p.draft);
+---
+
+<Base
+  title="For Banks & EMIs — Aryze"
+  description="Stablecoin payments, corridors the incumbent rails don’t reach and a usable network membership, beside the core your bank already runs."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Solutions · Banks & EMIs"
+    title="Add the settlement your clients ask for."
+    lede="Stablecoin payments, corridors the incumbent rails don’t reach and a network membership you can use. Each sits beside the core you already run."
+    image={{
+      src: '/images/solutions/marketplaces.webp',
+      alt: 'A banking professional working in Copenhagen',
+      position: '50% 18%',
+    }}
+    video="/videos/banks-living-60fps.mp4"
+  >
+    <div class="btn-row hero-actions">
+      <a class="btn btn--primary" href="#situations">See the three situations</a>
+      <a class="btn btn--ghost" href="/consulting">Start with a pilot</a>
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">What doesn’t change</span>
+        <h2>Your core stays where it is.</h2>
+        <p class="lede">Aryze adds the settlement layer beside it. Your client still banks with you, under your name.</p>
+      </div>
+      <BankAssembly />
+    </div>
+  </section>
+
+  <section class="section section--card" id="situations">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Where banks start</span>
+        <h2>Three situations a bank already knows.</h2>
+        <p class="lede">All three run on the same infrastructure underneath.</p>
+      </div>
+      <div class="route-grid situations">
+        {
+          cards.map((c) => (
+            <article class="route-panel situation">
+              <h3>{c.title}</h3>
+              <p>{c.text}</p>
+              <div class="situation-product">
+                <h4>
+                  <a class="arrow-link" href={c.p.url}>{c.p.name}</a>
+                </h4>
+                {c.p.oneLiner && <p>{c.p.oneLiner}</p>}
+                <StatusChip product={c.p.slug} />
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="first-route">
+    <div class="container">
+      <div class="section-head">
+        <h2>Your customer pays in euros. Their supplier receives pounds.</h2>
+        <p class="lede">One payment, step by step, on the <span class="nowrap">{getProduct('on-chain-fx').name}</span> page.</p>
+        <a class="arrow-link" href={getProduct('on-chain-fx').url}>See the route</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="container bank-evidence">
+      <div>
+        <span class="eyebrow">Working mechanism</span>
+        <h2>One instruction. A traceable result.</h2>
+        <p class="lede">Funding, conversion and payout, linked on one audit trail.</p>
+        <a class="arrow-link" href="/how-it-works#evidence">See the technical record</a>
+      </div>
+      <div class="bank-evidence-ticket">
+        <span>5 August 2026 · Sandbox</span>
+        <div><strong>€5.00</strong><b aria-hidden="true">→</b><strong>£4.27</strong></div>
+        <p>One connected instruction · run again, same final result</p>
+        <small>
+          Historical sandbox demonstration on a separate implementation—not a live, end-to-end MoneyOS bank route. Route-specific production delivery is agreed with the institution.
+        </small>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card" id="sandbox">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">A small first step</span>
+        <h2>Start with a pilot.</h2>
+        <p class="lede">
+          The first step is small and fixed. One route, run on test rails, before any large budget is committed. You see it complete, and decide from there.
+        </p>
+        <a class="arrow-link" href="/consulting">Scope a pilot</a>
+      </div>
+    </div>
+  </section>
+
+  <CtaPanel
+    title="What are your customers asking for next?"
+    text="Tell us what your clients are asking for and what you run today. We map the route with you."
+    primary={{ label: 'Discuss the next capability', href: '/contact' }}
+    secondary={{ label: 'How MoneyOS fits', href: '/how-it-works' }}
+  />
+</Base>
+
+<style>
+  .hero-actions {
+    margin-top: 28px;
+  }
+  .section-head .arrow-link {
+    margin-top: 20px;
+    display: inline-block;
+  }
+  #first-route .section-head {
+    margin-bottom: 0;
+  }
+  .nowrap {
+    white-space: nowrap;
+  }
+  .situation {
+    flex-direction: column;
+    display: flex;
+  }
+  .situation-product {
+    border-top: 1px solid var(--line);
+    margin-top: auto;
+    padding-top: 20px;
+  }
+  .situation > p {
+    margin-bottom: 24px;
+  }
+  .situation-product h4 {
+    margin-bottom: 6px;
+    font-size: 1.0625rem;
+  }
+  .situation-product p {
+    margin-bottom: 14px;
+    font-size: 0.875rem;
+  }
+  @media (width<=900px) {
+    .situations {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .route-boundary {
+    max-width: 76em;
+    color: var(--muted);
+    border-left: 2px solid var(--blue);
+    margin: 24px 0 22px;
+    padding-left: 16px;
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+  .bank-evidence {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: clamp(40px, 7vw, 96px);
+    display: grid;
+  }
+  .bank-evidence .arrow-link {
+    color: var(--blue);
+  }
+  .bank-evidence-ticket {
+    border: 1px solid var(--line-inv);
+    background: radial-gradient(circle at 80% 0, #00afe729, transparent 42%),
+      var(--card-inv);
+    border-radius: 16px;
+    padding: clamp(24px, 4vw, 38px);
+  }
+  .bank-evidence-ticket > span,
+  .bank-evidence-ticket small {
+    font: 0.625rem/1.6 var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted-inv);
+  }
+  .bank-evidence-ticket > div {
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 36px 0 22px;
+    display: flex;
+  }
+  .bank-evidence-ticket strong {
+    letter-spacing: -0.055em;
+    font-size: clamp(2.6rem, 5vw, 4.4rem);
+    font-weight: 400;
+  }
+  .bank-evidence-ticket b {
+    color: var(--blue);
+    font-size: 1.5rem;
+  }
+  .bank-evidence-ticket p {
+    border-top: 1px solid var(--line-inv);
+    color: var(--text-inv);
+    padding-top: 18px;
+    font-size: 0.8125rem;
+  }
+  .bank-evidence-ticket small {
+    text-transform: none;
+    letter-spacing: 0;
+    display: block;
+  }
+  @media (width<=880px) {
+    .bank-evidence {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (width<=380px) {
+    .bank-evidence-ticket > div {
+      gap: 10px;
+    }
+    .bank-evidence-ticket strong {
+      font-size: 2rem;
+    }
+  }
+</style>

@@ -1,0 +1,169 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import WhoFor from '../../components/product/WhoFor.astro';
+import Steps from '../../components/product/Steps.astro';
+import Included from '../../components/product/Included.astro';
+import NotIncluded from '../../components/product/NotIncluded.astro';
+import RunsOnMoneyOS from '../../components/product/RunsOnMoneyOS.astro';
+import CTA from '../../components/product/CTA.astro';
+import HeroStatus from '../../components/pages/products/HeroStatus.astro';
+import PartsTable from '../../components/pages/products/PartsTable.astro';
+import { getProduct } from '../../data/products';
+
+const product = getProduct('walletless-settlement');
+---
+
+<Base
+  title="Walletless Settlement — Aryze"
+  description="A conversion layer for banks whose clients are paid in stablecoins. The client holds the coin. Ordinary money lands on the client's ordinary account."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Products · Convert & settle"
+    title={product.name}
+    lede={product.oneLiner ?? ''}
+    image={{ src: '/images/solutions/marketplaces.webp', alt: 'A banking professional working in Copenhagen', position: '50% 18%' }}
+    video="/videos/banks-living-60fps.mp4"
+  >
+    <HeroStatus product="walletless-settlement">
+      <p>The client holds the coin. The bank only ever moves fiat.</p>
+    </HeroStatus>
+  </PageHero>
+
+  <section class="section section--card">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">The situation</span>
+        <h2>Your client is paid in stablecoins.</h2>
+        <p class="lede">Companies are already paid in digital dollars. They still need ordinary banking after that.</p>
+        <p class="lede">The client asks the bank to receive the payment. Today the answer is no, so the client goes to an exchange, and the flow, the deposit and the margin land there.</p>
+      </div>
+      <PartsTable
+        caption="Who owns each part of the payment today"
+        headers={['The part', 'Who owns it today']}
+        rows={[
+          ['The conversion', 'An exchange.'],
+          ['The off-ramp', 'A specialist.'],
+          ['The interface', 'A wallet.'],
+          ['The evidence', 'Each provider holds one piece.'],
+        ]}
+      />
+      <p class="route-note">The bank often sees only a deposit at the end, after most of the payment has happened somewhere else.</p>
+      <p class="route-note">The bank wants the flow, the deposit and the margin. It does not want a wallet, keys or a digital asset on its books.</p>
+    </div>
+  </section>
+
+  <Steps
+    title="Screened, priced and converted in front of the gate."
+    tone="plain"
+    steps={[
+      { title: 'The client holds the coin', text: 'In their own app, under their own control.' },
+      { title: 'Checked at the gate', text: 'Screening and a Travel Rule check run before anything converts.' },
+      { title: 'Price locked', text: 'The client sees the exact rate and confirms before anything executes.' },
+      {
+        title: 'Ordinary money lands',
+        text: 'Conversion runs as one all-or-nothing motion. Fiat posts to the client’s ordinary account.',
+      },
+    ]}
+    note="If any check fails, nothing moves. There is no partial state to unwind."
+  />
+
+  <Included
+    title="What the layer carries."
+    tone="card"
+    items={[
+      { title: 'The gate', text: 'Screening and Travel Rule checks before anything converts.' },
+      { title: 'The price lock', text: 'One quoted rate, shown to the client, confirmed before execution and held to the end.' },
+      { title: 'The conversion', text: 'The coin becomes fiat in one all-or-nothing motion, on one audit trail.' },
+      {
+        title: 'The connections behind it',
+        text: 'Broker, FX and liquidity connections, run by Aryze rather than assembled by the bank.',
+      },
+      { title: 'The fiat delivery', text: 'An ordinary posting to an ordinary account, in the channel the client already uses.' },
+    ]}
+  />
+
+  <WhoFor
+    eyebrow="For the bank"
+    title="Four things the bank keeps."
+    tone="plain"
+    columns={4}
+    items={[
+      { title: 'The customer', text: 'The client and the account relationship.' },
+      { title: 'The revenue', text: 'The conversion margin an exchange takes today is yours to price.' },
+      { title: 'The visibility', text: 'Screening, rate and posting on one audit trail.' },
+      { title: 'The brand', text: 'The service runs under the bank’s own name.' },
+    ]}
+  >
+    <p class="route-note">For the client, digital value becomes ordinary account money.</p>
+  </WhoFor>
+
+  <NotIncluded
+    items={[
+      {
+        title: 'Aryze is infrastructure',
+        text: 'Aryze is never the issuer, does not operate the programme and does not hold the bank’s licence or its money.',
+      },
+      { title: 'No wallet for the bank', text: 'The bank receives no wallet, keys or custody. It doesn’t need them.' },
+      {
+        title: 'No new licence for a bank',
+        text: 'Under MiCA, a credit institution can provide crypto-asset services by notification.',
+      },
+      {
+        title: 'Non-MiCA-compliant tokens',
+        text: 'Handled through partners outside the EEA perimeter, or declined in the first version.',
+      },
+      { title: 'One direction', text: 'Fiat into stablecoins is not in scope.' },
+      {
+        title: 'Set per engagement',
+        text: 'Networks, tokens, jurisdictions and the regulated liquidity partner are confirmed for each engagement.',
+      },
+    ]}
+  />
+
+  <section class="section" id="proof">
+    <div class="container">
+      <div class="route-panel proof">
+        <span class="eyebrow">Proof</span>
+        <h2>A full round trip, end to end.</h2>
+        <p>A stablecoin into a euro account, euro into a sterling account, and sterling back out to a stablecoin. A wallet at each end where the customer needs one, ordinary accounts where the customer needs banking.</p>
+        <p>Walletless Settlement covers the first leg. Fiat back into a stablecoin is outside its scope.</p>
+        <p>This was a sandbox run. It proves the route completes. It is not a pricing demonstration, and its figures are not costs.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink mantra">
+    <div class="container">
+      <h2>Keep the client. Keep the account.<br />Add a new settlement layer.</h2>
+    </div>
+  </section>
+
+  <RunsOnMoneyOS
+    product="walletless-settlement"
+    body={`${product.name} runs on MoneyOS, the same infrastructure under every Aryze product.`}
+  />
+
+  <CTA
+    title="Bring the request your desk turns down."
+    text="Tell us who is asking and what they are paid in. We map the route from the coin to their account."
+  />
+</Base>
+
+<style>
+  .proof h2 {
+    margin-bottom: 16px;
+  }
+  .proof p {
+    max-width: 46em;
+  }
+  .mantra h2 {
+    color: var(--text-inv);
+    max-width: 18em;
+    margin: 0;
+    font-size: clamp(2rem, 4.4vw, 3.4rem);
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+/**
+ * Base page shell shared by every page.
+ *
+ * Renders <head> (title, description, canonical, favicon, robots, theme
+ * colour, Open Graph / Twitter tags, ClientRouter, Organization JSON-LD),
+ * the skip link, <Header />, <main id="main-content"> with the default slot,
+ * <Footer /> and the motion runtime.
+ *
+ * Slots:
+ *   default  → page content inside <main>
+ *   "head"   → extra elements appended to <head> (rarely needed)
+ */
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { normalizePath } from '../scripts/paths';
+import { isDraftPath } from '../data/products';
+
+interface Props {
+  /** Full document title, e.g. "Pay by Bank — Aryze". Used for <title> and og:title. */
+  title: string;
+  /** Meta description, also used for og:description. */
+  description: string;
+  /** Alt text for the shared /og.png social image. */
+  ogImageAlt?: string;
+  /** Adds <meta name="robots" content="noindex, follow">. On by default, as on the live site. */
+  noindex?: boolean;
+  /** Draft page (e.g. a draft product): always noindex, whatever `noindex` says. Draft product URLs from the registry are detected automatically. */
+  draft?: boolean;
+}
+
+const {
+  title,
+  description,
+  ogImageAlt = 'Aryze. Financial infrastructure that fits what you already have.',
+  noindex: noindexProp = true,
+  draft = false,
+} = Astro.props;
+
+// Draft pages are never indexed, regardless of the site-wide default.
+const noindex = noindexProp || draft || isDraftPath(normalizePath(Astro.url.pathname));
+
+const site = Astro.site ?? new URL('https://aryze-website-2-0.vercel.app');
+const canonical = new URL(normalizePath(Astro.url.pathname), site).href;
+const ogImage = new URL('/og.png', site).href;
+
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Aryze',
+  legalName: 'Aryze ApS',
+  url: 'https://aryze.io',
+  foundingDate: '2017',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Bredgade 3, 2.',
+    postalCode: '1260',
+    addressLocality: 'Copenhagen K',
+    addressCountry: 'DK',
+  },
+  email: 'info@aryze.io',
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/brand/logo-icon-dark.svg" />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta name="theme-color" content="#001e2b" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Aryze" />
+    <ClientRouter />
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <Header />
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import { initMotion } from '../scripts/motion';
+      initMotion();
+    </script>
+  </body>
+</html>

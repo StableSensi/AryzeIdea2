@@ -1,0 +1,57 @@
+---
+/**
+ * "Runs on MoneyOS" strip: eyebrow, optional h2, one body line (default
+ * "<Product> runs on MoneyOS, the infrastructure under every Aryze product.")
+ * and an arrow link (default How it works → /how-it-works).
+ */
+import { getProduct, type ProductSlug } from '../../data/products';
+import { sectionClass, type Link, type SectionTone } from './types';
+
+interface Props {
+  product: ProductSlug;
+  eyebrow?: string;
+  title?: string;
+  body?: string;
+  link?: Link;
+  tone?: SectionTone;
+  id?: string;
+}
+const p = getProduct(Astro.props.product);
+const {
+  eyebrow = 'Runs on MoneyOS',
+  title,
+  body = `${p.name} runs on MoneyOS, the infrastructure under every Aryze product.`,
+  link = { label: 'How it works', href: '/how-it-works' },
+  tone = 'accent',
+  id,
+} = Astro.props;
+---
+
+<section class={sectionClass(tone)} id={id}>
+  <div class="container moneyos-strip">
+    <div>
+      <span class="eyebrow">{eyebrow}</span>
+      {title && <h2>{title}</h2>}
+      <p class="lede">{body}</p>
+    </div>
+    <a class="arrow-link" href={link.href}>{link.label}</a>
+  </div>
+</section>
+
+<style>
+  .moneyos-strip {
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px 48px;
+    display: flex;
+  }
+  .moneyos-strip .lede {
+    margin: 0;
+  }
+  @media (width<=720px) {
+    .moneyos-strip {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

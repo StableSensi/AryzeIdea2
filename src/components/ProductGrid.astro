@@ -1,0 +1,120 @@
+---
+/**
+ * Product catalogue as three step columns (Accept / Issue / Convert & settle),
+ * read from the registry. Each product is a linked row with its name and
+ * one-liner; a StatusChip shows only where the registry gives the product one.
+ * Drafts are hidden; an empty step is skipped. Renders no <section>: wrap it
+ * in the page's own section and section-head.
+ */
+import StatusChip from './StatusChip.astro';
+import { productGroups, type Step } from '../data/products';
+
+interface Props {
+  /** Limit to these steps (in step order). Default: all three. */
+  steps?: Step[];
+  /** Show the step label (e.g. "01 Accept") above each column. Default true. */
+  showStepLabels?: boolean;
+}
+
+const { steps, showStepLabels = true } = Astro.props;
+const groups = productGroups().filter((g) => !steps || steps.includes(g.id));
+const Name = showStepLabels ? 'h4' : 'h3';
+---
+
+<div class="catalogue">
+  {
+    groups.map((g) => (
+      <div class="catalogue__step" id={`step-${g.id}`}>
+        {showStepLabels && (
+          <h3 class="catalogue__label">
+            <span class="mono">{g.number}</span> {g.label}
+          </h3>
+        )}
+        <ul class="catalogue__list">
+          {g.products.map((p) => (
+            <li>
+              <a class="catalogue__item" href={p.url}>
+                <Name class="catalogue__name">
+                  {p.name} <span class="catalogue__arrow" aria-hidden="true">→</span>
+                </Name>
+                {p.oneLiner && <p>{p.oneLiner}</p>}
+                {p.chip && <StatusChip product={p.slug} />}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .catalogue {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 clamp(24px, 3.5vw, 56px);
+    display: grid;
+  }
+  .catalogue__label {
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--navy);
+    border-bottom: 1px solid var(--navy);
+    margin: 0;
+    padding-bottom: 14px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .catalogue__label .mono {
+    color: var(--cta);
+    margin-right: 6px;
+  }
+  .catalogue__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .catalogue__item {
+    border-bottom: 1px solid var(--line);
+    color: var(--navy);
+    justify-items: start;
+    gap: 8px;
+    padding: 24px 0 26px;
+    text-decoration: none;
+    display: grid;
+  }
+  .catalogue__name {
+    letter-spacing: -0.01em;
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 400;
+  }
+  .catalogue__arrow {
+    color: var(--cta);
+    margin-left: 0.3em;
+    transition: transform 0.2s var(--ease);
+    display: inline-block;
+  }
+  .catalogue__item:hover .catalogue__name,
+  .catalogue__item:focus-visible .catalogue__name {
+    color: var(--cta);
+  }
+  .catalogue__item:hover .catalogue__arrow {
+    transform: translateX(3px);
+  }
+  .catalogue__item p {
+    color: var(--muted);
+    max-width: 26em;
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.65;
+  }
+  .catalogue__item :global(.status-chip) {
+    margin-top: 6px;
+  }
+  @media (width <= 900px) {
+    .catalogue {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+</style>

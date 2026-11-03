@@ -1,0 +1,271 @@
+---
+/**
+ * Enquiry form (Contact and Consulting). Posts to the Formspree endpoint in
+ * data/site.ts; Formspree emails each submission to info@aryze.io with the
+ * visitor's address as reply-to. While the endpoint is empty, the form opens
+ * the visitor's email app with the message instead.
+ *
+ * Links elsewhere on the page with data-prefill="question" and href="#<id>"
+ * scroll to the form and start the message with that question.
+ */
+import { contactEmail, formEndpoint } from '../data/site';
+
+interface Props {
+  /** Anchor for the card, e.g. "form". */
+  id: string;
+  eyebrow: string;
+  title: string;
+  /** Email subject, so the inbox shows which page the enquiry came from. */
+  subject: string;
+  messageLabel: string;
+  messageHint: string;
+}
+
+const { id, eyebrow, title, subject, messageLabel, messageHint } = Astro.props;
+const hintId = `${id}-hint`;
+---
+
+<div class="form-card" id={id}>
+  <span class="eyebrow">{eyebrow}</span>
+  <h2>{title}</h2>
+  <form
+    class="contact-form"
+    data-contact-form
+    data-endpoint={formEndpoint}
+    data-email={contactEmail}
+    action={formEndpoint || `mailto:${contactEmail}`}
+    method="post"
+    enctype={formEndpoint ? undefined : 'text/plain'}
+    novalidate
+  >
+    <input type="hidden" name="_subject" value={subject} />
+    <div class="contact-form__row">
+      <label>
+        <span>Name</span>
+        <input name="name" type="text" autocomplete="name" required />
+      </label>
+      <label>
+        <span>Company</span>
+        <input name="company" type="text" autocomplete="organization" required />
+      </label>
+    </div>
+    <label>
+      <span>Work email</span>
+      <input name="email" type="email" autocomplete="email" required />
+    </label>
+    <label class="contact-form__message">
+      <span>{messageLabel}</span>
+      <small id={hintId}>{messageHint}</small>
+      <textarea name="message" rows="6" aria-describedby={hintId} required></textarea>
+    </label>
+    <label class="contact-form__trap" aria-hidden="true">
+      Leave this empty
+      <input name="_gotcha" type="text" tabindex="-1" autocomplete="off" />
+    </label>
+    <div class="contact-form__foot">
+      <button class="btn btn--primary" type="submit">Send</button>
+      <p class="contact-form__privacy">
+        We use what you send to reply to you. <a href="/privacy">Privacy notice</a>
+      </p>
+    </div>
+    <p class="contact-form__status" data-form-status role="status" aria-live="polite"></p>
+  </form>
+</div>
+
+<script>
+  function bindContactForms() {
+    document.querySelectorAll<HTMLFormElement>('form[data-contact-form]').forEach((form) => {
+      if (form.dataset.bound) return;
+      form.dataset.bound = 'true';
+      const status = form.querySelector<HTMLElement>('[data-form-status]')!;
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      const email = form.dataset.email ?? '';
+      const say = (text: string, tone: 'ok' | 'error' | 'info') => {
+        status.textContent = text;
+        status.dataset.tone = tone;
+      };
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        const data = new FormData(form);
+        if (String(data.get('_gotcha') ?? '').trim()) return;
+
+        const endpoint = form.dataset.endpoint;
+        if (!endpoint) {
+          const body = [data.get('message'), '', data.get('name'), data.get('company'), data.get('email')].join('\n');
+          const subject = encodeURIComponent(String(data.get('_subject')));
+          window.location.href = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(body)}`;
+          say(`Your email app should open with your message. If it doesn't, write to ${email}.`, 'info');
+          return;
+        }
+
+        const label = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Sending…';
+        try {
+          const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+          if (!res.ok) throw new Error(String(res.status));
+          form.reset();
+          say(`Sent. We reply from ${email}.`, 'ok');
+        } catch {
+          say(`That didn't go through. Try again, or write to ${email}.`, 'error');
+        } finally {
+          button.disabled = false;
+          button.textContent = label;
+        }
+      });
+    });
+
+    document.querySelectorAll<HTMLAnchorElement>('a[data-prefill]').forEach((link) => {
+      if (link.dataset.bound) return;
+      link.dataset.bound = 'true';
+      link.addEventListener('click', () => {
+        const field = document.querySelector(link.getAttribute('href') ?? '')?.querySelector('textarea');
+        if (!field) return;
+        if (!field.value.trim()) field.value = `${link.dataset.prefill}\n\n`;
+        requestAnimationFrame(() => field.focus({ preventScroll: true }));
+      });
+    });
+  }
+
+  // astro:page-load fires on the first load and after every ClientRouter navigation.
+  document.addEventListener('astro:page-load', bindContactForms);
+</script>
+
+<style>
+  /* A flex column, so a card stretched by its row gives the extra height to
+     the message field and its bottom edge lines up with the column beside it. */
+  .form-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    scroll-margin-top: 96px;
+    flex-direction: column;
+    padding: clamp(24px, 4vw, 44px);
+    display: flex;
+  }
+
+  .form-card h2 {
+    margin-bottom: 28px;
+  }
+
+  .contact-form {
+    flex-direction: column;
+    flex: 1;
+    gap: 20px;
+    display: flex;
+  }
+
+  .contact-form .contact-form__message {
+    flex-direction: column;
+    flex: 1;
+    display: flex;
+  }
+
+  .contact-form__message textarea {
+    flex: 1;
+  }
+
+  .contact-form__row {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    display: grid;
+  }
+
+  .contact-form label {
+    gap: 8px;
+    display: grid;
+  }
+
+  .contact-form label > span {
+    color: var(--navy);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .contact-form small {
+    color: var(--muted);
+    margin-top: -4px;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    color: var(--navy);
+    font: inherit;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    transition: border-color 0.15s;
+  }
+
+  .contact-form textarea {
+    resize: vertical;
+    min-height: 150px;
+    line-height: 1.6;
+  }
+
+  .contact-form input:focus-visible,
+  .contact-form textarea:focus-visible {
+    border-color: var(--cta);
+    outline: 2px solid var(--cta);
+    outline-offset: 1px;
+  }
+
+  .contact-form__trap {
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    left: -9999px;
+    overflow: hidden;
+  }
+
+  .contact-form__foot {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 24px;
+    margin-top: 4px;
+    display: flex;
+  }
+
+  .contact-form__privacy {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .contact-form__status {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .contact-form__status:empty {
+    display: none;
+  }
+
+  .contact-form__status[data-tone='ok'] {
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  .contact-form__status[data-tone='error'] {
+    color: var(--error);
+  }
+
+  @media (width <= 640px) {
+    .contact-form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

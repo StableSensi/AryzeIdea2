@@ -1,0 +1,755 @@
+---
+/**
+ * Pay by Bank fee calculator (#fee-calculator): an illustrative card vs.
+ * bank-payment transaction-fee comparison in GBP.
+ *
+ * Monthly cost = transactions × (average payment × percentage fee + fixed fee);
+ * annual = monthly × 12. The server renders the default result so the page
+ * is correct without JavaScript; all controls ship disabled and are enabled
+ * by the script once it has bound, so they cannot contradict the static
+ * figures. Defaults: 5,000 tx/month, £80 average, card 1.5% + £0.00,
+ * bank 0% + £0.50 → card £72,000, bank £30,000, £42,000 less per year.
+ */
+const defaults = { tx: 5000, avg: 80, cardRate: 1.5, cardFixed: 0, bankRate: 0, bankFixed: 0.5 };
+
+const whole = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
+const precise = new Intl.NumberFormat('en-GB', {
+  style: 'currency',
+  currency: 'GBP',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+const feeLabel = (rate: number, fixed: number) =>
+  rate.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + '% + ' + precise.format(fixed);
+
+const annualCard = defaults.tx * ((defaults.avg * defaults.cardRate) / 100 + defaults.cardFixed) * 12;
+const annualBank = defaults.tx * ((defaults.avg * defaults.bankRate) / 100 + defaults.bankFixed) * 12;
+const annualDifference = (Math.round(annualCard * 100) - Math.round(annualBank * 100)) / 100;
+const resultText =
+  annualDifference === 0
+    ? 'same estimated cost per year'
+    : (annualDifference > 0 ? 'less per ' : 'more per ') + 'year with bank payments';
+---
+
+<form class="fee-calculator" id="fee-calculator" aria-label="Illustrative payment fee comparison" novalidate>
+  <div class="calculator-head">
+    <div>
+      <span class="calculator-kicker">Estimated cost difference</span>
+      <output id="calc-result" class="calculator-result" aria-live="polite" aria-atomic="true">
+        <strong>{whole.format(Math.abs(annualDifference))}</strong>
+        <span>{resultText}</span>
+      </output>
+    </div>
+    <fieldset class="period-toggle" aria-label="Comparison period">
+      <legend class="sr-only">Comparison period</legend>
+      <label><input type="radio" name="calc-period" value="monthly" disabled /><span>Monthly</span></label>
+      <label><input type="radio" name="calc-period" value="annual" checked disabled /><span>Annual</span></label>
+    </fieldset>
+  </div>
+  <div class="calculator-body">
+    <div class="business-inputs">
+      <div class="range-field">
+        <div class="range-label">
+          <label for="calc-tx">Transactions per month</label>
+          <input
+            class="number-input"
+            type="number"
+            id="calc-tx"
+            value={defaults.tx}
+            min="0"
+            step="1"
+            inputmode="numeric"
+            required
+            disabled
+            aria-describedby="calc-note calc-error"
+          />
+        </div>
+        <input
+          class="range-input"
+          type="range"
+          id="calc-tx-range"
+          value={defaults.tx}
+          min="0"
+          max="50000"
+          step="500"
+          disabled
+          aria-label="Transactions per month slider"
+        />
+        <div class="range-scale" aria-hidden="true"><span>0</span><span>50k</span></div>
+      </div>
+      <div class="range-field">
+        <div class="range-label">
+          <label for="calc-avg">Average payment</label>
+          <div class="input-prefix">
+            <span>£</span>
+            <input
+              class="number-input"
+              type="number"
+              id="calc-avg"
+              value={defaults.avg}
+              min="0"
+              step="1"
+              inputmode="decimal"
+              required
+              disabled
+              aria-describedby="calc-error"
+            />
+          </div>
+        </div>
+        <input
+          class="range-input"
+          type="range"
+          id="calc-avg-range"
+          value={defaults.avg}
+          min="0"
+          max="500"
+          step="5"
+          disabled
+          aria-label="Average payment slider"
+        />
+        <div class="range-scale" aria-hidden="true"><span>£0</span><span>£500</span></div>
+      </div>
+    </div>
+    <div class="cost-comparison" aria-label="Cost comparison">
+      <article class="cost-card cost-card--card">
+        <div>
+          <span>Card payments</span>
+          <strong id="calc-card-cost">{whole.format(annualCard)}</strong>
+        </div>
+        <div class="cost-track" aria-hidden="true"><span id="calc-card-bar"></span></div>
+        <small id="calc-card-fee">{feeLabel(defaults.cardRate, defaults.cardFixed)}</small>
+      </article>
+      <article class="cost-card cost-card--bank">
+        <div>
+          <span>Bank payments</span>
+          <strong id="calc-bank-cost">{whole.format(annualBank)}</strong>
+        </div>
+        <div class="cost-track" aria-hidden="true"><span id="calc-bank-bar"></span></div>
+        <small id="calc-bank-fee">{feeLabel(defaults.bankRate, defaults.bankFixed)}</small>
+      </article>
+    </div>
+    <details class="fee-assumptions">
+      <summary>Adjust fee assumptions <span aria-hidden="true">＋</span></summary>
+      <div class="fee-grid">
+        <fieldset>
+          <legend>Card payments</legend>
+          <label for="calc-card-rate"
+            >Percentage fee <span
+              ><input
+                type="number"
+                id="calc-card-rate"
+                value={defaults.cardRate}
+                min="0"
+                step="0.1"
+                inputmode="decimal"
+                required
+                disabled
+                aria-describedby="calc-error"
+              />%</span
+            ></label
+          >
+          <label for="calc-card-fixed"
+            >Fixed fee <span class="input-prefix"
+              ><b>£</b><input
+                type="number"
+                id="calc-card-fixed"
+                value={defaults.cardFixed}
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                required
+                disabled
+                aria-describedby="calc-error"
+              /></span
+            ></label
+          >
+        </fieldset>
+        <fieldset>
+          <legend>Bank payments</legend>
+          <label for="calc-bank-rate"
+            >Percentage fee <span
+              ><input
+                type="number"
+                id="calc-bank-rate"
+                value={defaults.bankRate}
+                min="0"
+                step="0.1"
+                inputmode="decimal"
+                required
+                disabled
+                aria-describedby="calc-error"
+              />%</span
+            ></label
+          >
+          <label for="calc-bank-fixed"
+            >Fixed fee <span class="input-prefix"
+              ><b>£</b><input
+                type="number"
+                id="calc-bank-fixed"
+                value={defaults.bankFixed}
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                required
+                disabled
+                aria-describedby="calc-error"
+              /></span
+            ></label
+          >
+        </fieldset>
+      </div>
+    </details>
+    <p id="calc-error" class="calculator-error" role="status" hidden></p>
+    <p id="calc-note" class="calculator-note">
+      Illustrative transaction-fee comparison in GBP. It excludes setup, minimum charges, refunds, fraud, FX and other
+      operating costs.
+    </p>
+  </div>
+</form>
+<noscript>
+  <p class="calculator-noscript">
+    The displayed result uses 5,000 monthly transactions, an £80 average payment, card fees of 1.5%, and bank-payment
+    fees of £0.50 per transaction. JavaScript is required to change the assumptions.
+  </p>
+</noscript>
+
+<script>
+  const whole = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
+  const precise = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const FIELD_IDS = ['calc-tx', 'calc-avg', 'calc-card-rate', 'calc-card-fixed', 'calc-bank-rate', 'calc-bank-fixed'];
+
+  const byId = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  function feeLabel(rate: number, fixed: number) {
+    return rate.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + '% + ' + precise.format(fixed);
+  }
+
+  function bindCalculator() {
+    const form = document.getElementById('fee-calculator') as HTMLFormElement | null;
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = 'true';
+
+    const fields = FIELD_IDS.map((id) => byId<HTMLInputElement>(id));
+    const [txField, avgField] = fields;
+    const txRange = byId<HTMLInputElement>('calc-tx-range');
+    const avgRange = byId<HTMLInputElement>('calc-avg-range');
+    const result = byId<HTMLOutputElement>('calc-result');
+    const resultAmount = result.querySelector('strong')!;
+    const resultText = result.querySelector('span')!;
+    const cardCost = byId('calc-card-cost');
+    const bankCost = byId('calc-bank-cost');
+    const cardBar = byId('calc-card-bar');
+    const bankBar = byId('calc-bank-bar');
+    const cardFee = byId('calc-card-fee');
+    const bankFee = byId('calc-bank-fee');
+    const error = byId('calc-error');
+    const periodFields = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="calc-period"]'));
+
+    /** Links a slider to its number field; returns a function that resyncs the slider from the field. */
+    function syncFromRange(range: HTMLInputElement, field: HTMLInputElement) {
+      const paint = () => {
+        const min = Number(range.min);
+        const span = Number(range.max) - min;
+        const position = span > 0 ? ((Number(range.value) - min) / span) * 100 : 0;
+        range.style.setProperty('--range-fill', position + '%');
+      };
+      const fromField = () => {
+        const value = Number(field.value);
+        if (Number.isFinite(value)) {
+          range.value = String(Math.min(Number(range.max), Math.max(Number(range.min), value)));
+        }
+        paint();
+      };
+      range.addEventListener('input', () => {
+        field.value = range.value;
+        paint();
+        calculate();
+      });
+      field.addEventListener('input', fromField);
+      paint();
+      return fromField;
+    }
+
+    function calculate() {
+      const values = fields.map((field) => field.valueAsNumber);
+      let invalid = false;
+      const validity = fields.map((field, i) => {
+        // Every field must be zero or more; transactions must also be a whole number.
+        const valid = Number.isFinite(values[i]) && values[i] >= 0 && (i !== 0 || Number.isInteger(values[i]));
+        field.setAttribute('aria-invalid', valid ? 'false' : 'true');
+        if (!valid) invalid = true;
+        return valid;
+      });
+
+      const [tx, avg, cardRate, cardFixed, bankRate, bankFixed] = values;
+      const monthlyCard = tx * ((avg * cardRate) / 100 + cardFixed);
+      const monthlyBank = tx * ((avg * bankRate) / 100 + bankFixed);
+      const tooLarge =
+        !invalid &&
+        (!Number.isFinite(monthlyCard) ||
+          !Number.isFinite(monthlyBank) ||
+          Math.max(monthlyCard, monthlyBank) * 1200 > Number.MAX_SAFE_INTEGER);
+
+      if (invalid || tooLarge) {
+        error.textContent = invalid
+          ? 'Enter zero or more in every field. Transactions must be a whole number.'
+          : 'These values are too large to compare reliably.';
+        error.hidden = false;
+        result.hidden = true;
+        // Withhold the cost figures too, so no result from earlier inputs stays on screen.
+        cardCost.textContent = '—';
+        bankCost.textContent = '—';
+        cardBar.style.setProperty('--cost-width', '0%');
+        bankBar.style.setProperty('--cost-width', '0%');
+        cardFee.textContent = validity[2] && validity[3] ? feeLabel(cardRate, cardFixed) : '—';
+        bankFee.textContent = validity[4] && validity[5] ? feeLabel(bankRate, bankFixed) : '—';
+        return;
+      }
+
+      error.hidden = true;
+      result.hidden = false;
+      const annual = form!.querySelector<HTMLInputElement>('input[name="calc-period"]:checked')?.value === 'annual';
+      const multiplier = annual ? 12 : 1;
+      const card = monthlyCard * multiplier;
+      const bank = monthlyBank * multiplier;
+      // Compare in whole pence: floating-point noise must not turn equal costs into "£0 more/less".
+      const difference = (Math.round(card * 100) - Math.round(bank * 100)) / 100;
+      // Show pence when any non-zero cost or difference would otherwise display as £0.
+      const money = [card, bank, difference].some((amount) => amount !== 0 && Math.abs(amount) < 1) ? precise : whole;
+      const period = annual ? 'year' : 'month';
+      const max = Math.max(card, bank, 1);
+
+      resultAmount.textContent = money.format(Math.abs(difference));
+      resultText.textContent =
+        difference === 0
+          ? 'same estimated cost per ' + period
+          : (difference > 0 ? 'less per ' : 'more per ') + period + ' with bank payments';
+      cardCost.textContent = money.format(card);
+      bankCost.textContent = money.format(bank);
+      cardBar.style.setProperty('--cost-width', Math.max(4, (card / max) * 100) + '%');
+      bankBar.style.setProperty('--cost-width', Math.max(4, (bank / max) * 100) + '%');
+      cardFee.textContent = feeLabel(cardRate, cardFixed);
+      bankFee.textContent = feeLabel(bankRate, bankFixed);
+    }
+
+    const syncRanges = [syncFromRange(txRange, txField), syncFromRange(avgRange, avgField)];
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      calculate();
+    });
+    fields.forEach((field) => field.addEventListener('input', calculate));
+    periodFields.forEach((field) => field.addEventListener('change', calculate));
+    // History navigation can restore field values after load without input events: resync sliders and result.
+    form.addEventListener('calculator:refresh', () => {
+      syncRanges.forEach((sync) => sync());
+      calculate();
+    });
+    calculate();
+    // Controls ship disabled so they cannot contradict the static figures without JavaScript.
+    form.querySelectorAll<HTMLInputElement>('input[disabled]').forEach((input) => (input.disabled = false));
+  }
+
+  // One page-level listener that looks up the current form, so swapped-out pages are not retained.
+  window.addEventListener('pageshow', () => {
+    const form = document.getElementById('fee-calculator');
+    if (form?.dataset.bound) form.dispatchEvent(new Event('calculator:refresh'));
+  });
+
+  // astro:page-load fires on the first load and after every ClientRouter navigation.
+  document.addEventListener('astro:page-load', bindCalculator);
+  bindCalculator();
+</script>
+
+<style>
+  .fee-calculator {
+    background: var(--card);
+    border: 1px solid color-mix(in srgb, var(--line) 72%, white);
+    border-radius: 16px;
+    min-width: 0;
+    overflow: hidden;
+    box-shadow: 0 10px 30px #001e2b0f;
+  }
+  .calculator-head {
+    color: var(--text-inv);
+    background: var(--navy);
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 20px;
+    padding: 20px 24px;
+    display: grid;
+    container-type: inline-size;
+  }
+  .calculator-head > div {
+    display: contents;
+  }
+  .calculator-kicker {
+    font: 0.6875rem/1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-inv);
+    grid-area: 1/1;
+    display: block;
+  }
+  .calculator-result {
+    grid-area: 2/1/3/-1;
+    gap: 3px;
+    min-width: 0;
+    margin-top: 8px;
+    display: grid;
+  }
+  .calculator-result strong {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.055em;
+    color: var(--text-inv);
+    overflow-wrap: anywhere;
+    font-size: min(clamp(2.25rem, 4vw, 3.5rem), 20cqi);
+    font-weight: 400;
+    line-height: 0.95;
+  }
+  .calculator-result span {
+    color: var(--muted-inv);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .period-toggle {
+    border: 1px solid #f3f2f13d;
+    border-radius: 999px;
+    grid-area: 1/2;
+    margin: 0;
+    padding: 4px;
+    display: flex;
+  }
+  .period-toggle label {
+    cursor: pointer;
+    position: relative;
+  }
+  .period-toggle input {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+  .period-toggle span {
+    color: var(--muted-inv);
+    transition:
+      background 0.2s var(--ease),
+      color 0.2s var(--ease);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    display: block;
+  }
+  .period-toggle
+    input:checked
+    + span {
+    background: var(--text-inv);
+    color: var(--navy);
+  }
+  .period-toggle
+    input:focus-visible
+    + span {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+  .calculator-body {
+    gap: 18px;
+    padding: 20px 24px;
+    display: grid;
+  }
+  .business-inputs {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    display: grid;
+  }
+  .range-field {
+    min-width: 0;
+  }
+  .range-label {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    display: flex;
+  }
+  .range-label > label {
+    color: var(--navy);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .number-input {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    width: 5.5rem;
+    min-height: 44px;
+    color: var(--navy);
+    font: 0.875rem var(--mono);
+    text-align: right;
+    border-radius: 8px;
+    padding: 9px 10px;
+  }
+  .input-prefix {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    border-radius: 8px;
+    align-items: center;
+    display: flex;
+    overflow: hidden;
+  }
+  .input-prefix > span,
+  .input-prefix > b {
+    font: 0.875rem var(--mono);
+    color: var(--muted);
+    padding-left: 10px;
+  }
+  .input-prefix .number-input,
+  .fee-grid
+    .input-prefix
+    input {
+    background: 0 0;
+    border: 0;
+  }
+  .range-input {
+    --range-fill: 16%;
+    appearance: none;
+    background: linear-gradient(
+      90deg,
+      var(--cta) 0 var(--range-fill),
+      var(--line-muted) var(--range-fill) 100%
+    );
+    cursor: pointer;
+    border-radius: 999px;
+    width: 100%;
+    height: 5px;
+  }
+  .range-input::-webkit-slider-thumb {
+    appearance: none;
+    background: var(--card);
+    border: 5px solid var(--cta);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    box-shadow: 0 2px 8px #001e2b2e;
+  }
+  .range-input::-moz-range-thumb {
+    background: var(--card);
+    border: 5px solid var(--cta);
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    box-shadow: 0 2px 8px #001e2b2e;
+  }
+  #calc-avg-range {
+    --range-fill: 16%;
+  }
+  #calc-tx-range {
+    --range-fill: 10%;
+  }
+  #calc-bank-bar {
+    --cost-width: 41.6667%;
+  }
+  .range-scale {
+    color: var(--muted);
+    font: 0.625rem var(--mono);
+    justify-content: space-between;
+    margin-top: 5px;
+    display: flex;
+  }
+  .cost-comparison {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    display: grid;
+  }
+  .cost-card {
+    background: var(--bg);
+    border: 1px solid var(--line-muted);
+    border-radius: 10px;
+    min-width: 0;
+    padding: 14px;
+  }
+  .cost-card > div:first-child {
+    gap: 4px;
+    display: grid;
+  }
+  .cost-card span {
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+  .cost-card strong {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.3rem, 2vw, 1.6rem);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .cost-card small {
+    color: var(--muted);
+    font: 0.75rem var(--mono);
+    margin-top: 6px;
+    display: block;
+  }
+  .cost-track {
+    background: var(--line-muted);
+    border-radius: 999px;
+    height: 6px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .cost-track span {
+    width: var(--cost-width, 100%);
+    border-radius: inherit;
+    background: var(--muted);
+    height: 100%;
+    transition: width 0.48s var(--ease);
+    display: block;
+  }
+  .cost-card--bank
+    .cost-track
+    span {
+    background: linear-gradient(90deg, var(--cta), var(--blue));
+  }
+  .fee-assumptions {
+    border-top: 1px solid var(--line-muted);
+    padding-top: 10px;
+  }
+  .fee-assumptions summary {
+    cursor: pointer;
+    min-height: 32px;
+    color: var(--navy);
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    list-style: none;
+    display: flex;
+  }
+  .fee-assumptions
+    summary::-webkit-details-marker {
+    display: none;
+  }
+  .fee-assumptions[open]
+    summary
+    span {
+    transform: rotate(45deg);
+  }
+  .fee-assumptions
+    summary
+    span {
+    color: var(--cta);
+    transition: transform 0.2s var(--ease);
+  }
+  .fee-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 14px;
+    display: grid;
+  }
+  .fee-grid fieldset {
+    border: 1px solid var(--line-muted);
+    border-radius: 12px;
+    gap: 12px;
+    min-width: 0;
+    padding: 18px;
+    display: grid;
+  }
+  .fee-grid legend {
+    padding: 0 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .fee-grid label {
+    color: var(--muted);
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    font-size: 0.75rem;
+    display: flex;
+  }
+  .fee-grid
+    label
+    > span {
+    color: var(--muted);
+    align-items: center;
+    display: flex;
+  }
+  .fee-grid input {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    width: 76px;
+    color: var(--navy);
+    font: 0.75rem var(--mono);
+    text-align: right;
+    border-radius: 6px;
+    padding: 8px;
+  }
+  .calculator-note,
+  .calculator-noscript {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  .calculator-error {
+    color: var(--error);
+    margin: 0;
+    font-size: 0.8125rem;
+  }
+  .calculator-error[hidden],
+  .calculator-result[hidden] {
+    display: none;
+  }
+  input:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--cta);
+    outline-offset: 3px;
+  }
+  input[aria-invalid="true"] {
+    border-color: var(--error);
+  }
+  .sr-only {
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    position: absolute;
+    overflow: hidden;
+  }
+  @media (width<=660px) {
+    .calculator-head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .calculator-result {
+      grid-area: 2/1;
+    }
+    .period-toggle {
+      grid-area: 3/1;
+      margin-top: 12px;
+    }
+    .period-toggle label {
+      text-align: center;
+      flex: 1;
+    }
+    .business-inputs,
+    .cost-comparison,
+    .fee-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .calculator-result strong {
+      font-size: min(2.8rem, 20cqi);
+    }
+  }
+  @container (width<=17.5em) {
+    .calculator-result span {
+      min-height: 3em;
+    }
+  }
+</style>

@@ -1,0 +1,266 @@
+---
+/**
+ * "Living photo": a muted looping video laid over a still photograph.
+ *
+ * Place it inside a positioned parent that already renders the accessible
+ * <img> (e.g. PageHero's <figure class="page-hero-media">). The overlay is
+ * absolutely positioned over the whole parent. No video is fetched until the
+ * photo is visible and motion is allowed; reduced-motion users never see it.
+ * Once playing, the whole photo becomes a (transparent) pause/play button.
+ *
+ * Props:
+ *   src        video URL, e.g. "/videos/city-living-60fps.mp4"
+ *   position   object-position of the parent image (default "50% 50%")
+ *   radius     corner radius matching the parent image (default "18px")
+ *   transfers  draw the animated "light transfer" pulses over the photo.
+ *              Defaults to true for the city video (the only one with pulses).
+ */
+interface Props {
+  src: string;
+  position?: string;
+  radius?: string;
+  transfers?: boolean;
+}
+
+const {
+  src,
+  position = '50% 50%',
+  radius = '18px',
+  transfers = src.includes('city-living'),
+} = Astro.props;
+
+// The pulse paths are drawn on the city video's 1104 × 816 frame and follow
+// the image's object-position when the frame is cropped.
+const FRAME = { width: 1104, height: 816 };
+const [ax, ay] = position.split(/\s+/).map((v) => parseFloat(v) / 100);
+const transfersStyle = `--lp-ax:${ax};--lp-ay:${ay};--lp-ar:${FRAME.width / FRAME.height};border-radius:${radius}`;
+
+const pulses = [
+  { time: '2.9s', delay: '.25s', d: 'M -12 608 C 80 584 200 548 332 510' },
+  {
+    time: '3.3s',
+    delay: '1.35s',
+    d: 'M 402 572 C 380 600 388 630 425 647 C 470 662 560 662 690 665 C 780 667 850 674 905 684',
+  },
+  { time: '3.1s', delay: '2.2s', d: 'M 642 536 C 690 556 745 590 780 630 C 810 665 835 700 852 738' },
+];
+---
+
+<div class="living-photo" data-living-photo data-video-src={src}>
+  <!-- The parent's original, accessible image always remains underneath. No src
+       until visible and motion is allowed: no-JS/reduced motion fetch no video.
+       The video stays transparent until its first decoded frame is presented,
+       then cross-fades in; pausing holds that current frame (never the still). -->
+  <video
+    hidden
+    muted
+    autoplay
+    playsinline
+    loop
+    preload="none"
+    aria-hidden="true"
+    tabindex="-1"
+    disablepictureinpicture
+    style={`object-position:${position};border-radius:${radius}`}></video>
+  {
+    transfers && (
+      <div class="lp-transfers" style={transfersStyle} aria-hidden="true">
+        <svg viewBox={`0 0 ${FRAME.width} ${FRAME.height}`} preserveAspectRatio="xMidYMid slice" focusable="false">
+          {pulses.map((p) => (
+            <g class="lp-pulse" style={`--lp-time:${p.time};--lp-delay:${p.delay}`}>
+              <path class="lp-halo" pathLength="1" d={p.d} />
+              <path class="lp-glow" pathLength="1" d={p.d} />
+              <path class="lp-core" pathLength="1" d={p.d} />
+            </g>
+          ))}
+        </svg>
+      </div>
+    )
+  }
+  <!-- The whole photograph is the (transparent) control once motion has started. -->
+  <button hidden type="button" class="lp-toggle" aria-label="Pause photo animation" style={`border-radius:${radius}`}
+  ></button>
+  <span class="lp-feedback" aria-hidden="true">
+    <svg viewBox="0 0 32 32" width="32" height="32" focusable="false">
+      <path class="lp-icon-pause" d="M10.5 8.5h4v15h-4zM17.5 8.5h4v15h-4z"></path>
+      <path class="lp-icon-play" d="M11.5 8v16L24 16z"></path>
+    </svg>
+  </span>
+</div>
+
+<script>
+  import { initLivingPhotos, destroyLivingPhotos } from '../scripts/living-photo';
+  document.addEventListener('DOMContentLoaded', initLivingPhotos);
+  document.addEventListener('astro:page-load', initLivingPhotos);
+  document.addEventListener('astro:before-swap', destroyLivingPhotos);
+  if (document.readyState !== 'loading') initLivingPhotos();
+</script>
+
+<style>
+  .living-photo {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+  }
+  video {
+    object-fit: cover;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.5s ease-out;
+    display: block;
+  }
+  .living-photo[data-shown] video {
+    opacity: 1;
+  }
+  video[hidden],
+  button[hidden] {
+    display: none;
+  }
+  .lp-toggle {
+    z-index: 2;
+    cursor: pointer;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    background: 0 0;
+    border: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    inset: 0;
+  }
+  .lp-toggle:focus {
+    outline: none;
+  }
+  .lp-toggle:focus-visible {
+    outline: 3px solid var(--cta);
+    outline-offset: -3px;
+    box-shadow: inset 0 0 0 5px #ffffffd9;
+  }
+  .lp-feedback {
+    z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+    color: #fff;
+    filter: drop-shadow(0 1px 6px #001e2b8c);
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+  .lp-feedback svg {
+    display: block;
+  }
+  .lp-feedback path {
+    fill: currentColor;
+  }
+  .lp-feedback[data-icon="play"] .lp-icon-pause,
+  .lp-feedback:not([data-icon="play"]) .lp-icon-play {
+    display: none;
+  }
+  .lp-transfers {
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.5s ease-out,
+      visibility 0s linear 0.5s;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .living-photo[data-shown] .lp-transfers {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-out;
+  }
+  .lp-transfers svg {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  @supports (width: 1cqw) {
+    .lp-transfers {
+      container-type: size;
+    }
+    .lp-transfers svg {
+      --lp-w: max(100cqw, 100cqh * var(--lp-ar));
+      --lp-h: max(100cqh, 100cqw / var(--lp-ar));
+      width: var(--lp-w);
+      height: var(--lp-h);
+      inset: auto;
+      left: calc((100cqw - var(--lp-w)) * var(--lp-ax));
+      top: calc((100cqh - var(--lp-h)) * var(--lp-ay));
+    }
+  }
+  .lp-pulse {
+    opacity: 0;
+    animation: lp-pulse-fade var(--lp-time) linear var(--lp-delay) infinite both
+      paused;
+  }
+  .lp-pulse path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: var(--lp-len) 4;
+    stroke-dashoffset: var(--lp-len);
+    animation: lp-pulse-run var(--lp-time) linear var(--lp-delay) infinite both
+      paused;
+  }
+  .living-photo[data-shown][data-running] .lp-pulse,
+  .living-photo[data-shown][data-running] .lp-pulse path {
+    animation-play-state: running;
+  }
+  .lp-halo {
+    --lp-len: 0.2;
+    stroke: #ffe2b8;
+    stroke-opacity: 0.16;
+    stroke-width: 11px;
+  }
+  .lp-glow {
+    --lp-len: 0.12;
+    stroke: #fff1dc;
+    stroke-opacity: 0.38;
+    stroke-width: 4.5px;
+  }
+  .lp-core {
+    --lp-len: 0.06;
+    stroke: #fffdf8;
+    stroke-opacity: 0.95;
+    stroke-width: 2px;
+  }
+  @keyframes lp-pulse-run {
+    0% {
+      stroke-dashoffset: var(--lp-len);
+      animation-timing-function: cubic-bezier(0.4, 0.05, 0.3, 1);
+    }
+    28%,
+    to {
+      stroke-dashoffset: calc(var(--lp-len) - 1.2);
+    }
+  }
+  @keyframes lp-pulse-fade {
+    0% {
+      opacity: 0;
+    }
+    5%,
+    21% {
+      opacity: 1;
+    }
+    28%,
+    to {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .living-photo {
+      display: none;
+    }
+  }
+</style>

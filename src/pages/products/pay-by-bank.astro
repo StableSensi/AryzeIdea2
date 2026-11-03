@@ -1,0 +1,187 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Included from '../../components/product/Included.astro';
+import NotIncluded from '../../components/product/NotIncluded.astro';
+import WhoFor from '../../components/product/WhoFor.astro';
+import RunsOnMoneyOS from '../../components/product/RunsOnMoneyOS.astro';
+import CTA from '../../components/product/CTA.astro';
+import Calculator from '../../components/pages/products/Calculator.astro';
+import RouteFlowJoin from '../../components/pages/products/RouteFlowJoin.astro';
+import ApplicationTriangle from '../../components/pages/products/ApplicationTriangle.astro';
+import HeroStatus from '../../components/pages/products/HeroStatus.astro';
+import { getProduct } from '../../data/products';
+
+const product = getProduct('pay-by-bank');
+
+const journey = [
+  { title: 'Choose', text: 'Select a supported bank.' },
+  { title: 'Authorise', text: 'Approve through the bank.' },
+  { title: 'Return', text: 'Update the checkout.' },
+  { title: 'Reconcile', text: 'Match the settlement reference.' },
+];
+
+const included = [
+  { title: 'Pay-ins', text: 'Checkout, deposits and top-ups, from the customer’s bank to yours.' },
+  { title: 'A fixed fee per transaction', text: 'The payment costs the same whatever the amount.' },
+  {
+    title: 'Bank-authenticated payments',
+    text: 'The customer approves every payment in their own bank. There is no card-scheme chargeback process.',
+  },
+  { title: 'RememberMe', text: 'Repeat payments take about 50% fewer steps, with a token valid for 15 months.' },
+  {
+    title: 'Account information',
+    text: 'With the customer’s consent, AIS gives account owner verification, balance and transaction data.',
+  },
+  { title: 'Your brand at checkout', text: 'Your logo, colours and font on the checkout page.' },
+  { title: 'Onboarding in four steps', text: 'Map the payment flow. KYB. Integration and test. Go live.' },
+  {
+    title: '99.99%+ platform uptime',
+    text: 'Measured on the Mastercard Open Banking platform over the past 12 months, with automatic failover and 24/7 support.',
+  },
+];
+
+const notIncluded = [
+  { title: 'Payouts are in pilot', text: 'Activated per named merchant, not generally available.' },
+  { title: 'No standalone recurring payments' },
+  { title: 'AIS is the data layer', text: 'It is not an affordability product.' },
+  { title: 'Refunds', text: 'Confirmed per engagement.' },
+  { title: 'Not card acquiring', text: `${product.name} does not process card payments.` },
+];
+
+const igaming = [
+  { title: 'Pay-ins', chip: { label: 'Live', tone: 'live' as const } },
+  { title: 'Payouts', text: 'Activated per named merchant.', chip: { label: 'Pilot' } },
+  { title: 'Crypto acceptance', chip: 'pay-by-crypto' as const, href: getProduct('pay-by-crypto').url },
+  { title: 'Treasury layer', chip: { label: 'Concept' } },
+];
+---
+
+<Base
+  title="Pay by Bank — Aryze"
+  description="Bank payments built into your product. Live in the UK and the EU on Mastercard Open Banking, with a fixed fee per transaction."
+>
+  <PageHero
+    tone="blue"
+    eyebrow="Products · Accept"
+    title="Bank payments. Built into your product."
+    lede="Let customers pay straight from their bank account, in a checkout that carries your brand."
+    image={{ src: '/images/rails-card.jpg', alt: 'A merchant working beside outgoing parcels', position: '50% 42%' }}
+    video="/videos/bank-payments-living-60fps.mp4"
+  >
+    <HeroStatus product="pay-by-bank">
+      <p>{product.oneLiner}</p>
+    </HeroStatus>
+  </PageHero>
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Account-to-account acceptance</span>
+        <h2>A direct route from bank to checkout.</h2>
+        <p class="lede">Aryze connects bank approval and payment status to your product on Mastercard Open Banking.</p>
+        <p class="lede">2,900+ banks across 19 European markets on Mastercard Open Banking. Bank depth varies by country.</p>
+      </div>
+      <div class="route-panel">
+        <h3>Coverage is agreed per deployment.</h3>
+        <p>Countries, banks and merchant eligibility depend on the route.</p>
+        <h3 class="acceptance-head">Acceptance is not settlement.</h3>
+        <p>
+          Your checkout should treat payment acceptance and confirmed merchant settlement as two separate states. Fraud,
+          refund and bank-payment rules still apply.
+        </p>
+        <details class="route-evidence">
+          <summary>Regulation</summary>
+          <p>Payment initiation runs under a licensed partner’s roof and covers PIS and AIS across the UK and the EU.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">How it works</span>
+        <h2>From checkout to confirmed payment status.</h2>
+      </div>
+      <ol class="route-flow route-flow--joined">
+        {
+          journey.map((step, i) => (
+            <li>
+              <span class="route-number">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+              {i > 0 && <RouteFlowJoin step={i + 1} />}
+            </li>
+          ))
+        }
+      </ol>
+      <details class="route-evidence">
+        <summary>Checkout integration in practice</summary>
+        <p>A recorded WooCommerce integration connected an order to Aryze’s API, a Mastercard Open Banking test bank and a signed merchant notification that updated the order. It demonstrates the checkout and status-notification pattern; settlement coverage and service levels are agreed for each deployment.</p>
+      </details>
+    </div>
+  </section>
+
+  <Included title="What you get today." items={included} />
+
+  <NotIncluded items={notIncluded} />
+
+  <section class="section section--accent" id="calculator">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Run your own numbers</span>
+        <h2>See the cost difference instantly.</h2>
+        <p class="lede">Move the two sliders. Add your actual fees only when you need them.</p>
+        <details class="route-evidence">
+          <summary>Assumptions and method</summary>
+          <p>Defaults are illustrative, not an Aryze quote. Monthly cost = transactions × (average payment × percentage fee + fixed fee).</p>
+        </details>
+      </div>
+      <Calculator />
+    </div>
+  </section>
+
+  <WhoFor
+    eyebrow="For iGaming operators"
+    title="Aryze Payments for iGaming"
+    body="One cashier in front. One treasury behind. One integration."
+    items={igaming}
+    columns={4}
+    tone="plain"
+    id="igaming"
+  >
+    <p class="igaming-link"><a class="arrow-link" href="/solutions/igaming">For iGaming operators</a></p>
+  </WhoFor>
+
+  <section class="section section--sand">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Choose the application</span>
+        <h2>Checkout. Deposit. Collection.</h2>
+        <p class="lede">Bank payments can stand alone or become the entry point to a wider MoneyOS route.</p>
+        <a class="arrow-link" href="/how-it-works">See how the pieces connect</a>
+      </div>
+      <ApplicationTriangle />
+    </div>
+  </section>
+
+  <RunsOnMoneyOS product="pay-by-bank" tone="card" />
+
+  <CTA
+    title="Add the bank-payment route you need."
+    text="Bring the market and checkout. We map coverage and integration with you."
+  />
+</Base>
+
+<style>
+  .route-flow--joined > li {
+    position: relative;
+  }
+  .igaming-link {
+    margin-top: 24px;
+  }
+  .acceptance-head {
+    margin-top: 28px;
+  }
+</style>

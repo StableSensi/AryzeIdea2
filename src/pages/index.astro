@@ -1,0 +1,575 @@
+---
+import Base from '../layouts/Base.astro';
+import LivingPhoto from '../components/LivingPhoto.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import RouteBankFit from '../components/pages/house/RouteBankFit.astro';
+import TrustedBy from '../components/TrustedBy.astro';
+import { getProduct, steps } from '../data/products';
+import { solutions } from '../data/solutions';
+
+/** Home S3: the three steps, labels from the registry, lines from home.md S3. */
+const stepLines: Record<string, string> = {
+  accept: 'Get paid.',
+  issue: 'Create digital money or tokens.',
+  convert: 'Move value across currencies, networks and banks.',
+};
+const mechanismSteps = steps.map((s) => ({
+  number: s.number,
+  title: s.label,
+  text: stepLines[s.id],
+  href: `/how-it-works#step-${s.id}`,
+}));
+
+/**
+ * Home S6: proof. The projects are worded as in the NFW brochure and the
+ * approved company-page copy; SYNC is named because it was announced in public.
+ */
+const proof = [
+  { title: getProduct('pay-by-bank').name, text: 'Account-to-account payments for merchants.', status: 'Live · UK and EU' },
+  { title: '2,900+ banks', text: 'Across 19 European markets, on the Mastercard Open Banking platform.' },
+  { title: 'A neobank in Canada', text: 'Payments infrastructure, built on the settlement layer.', status: 'Signed · in build' },
+  { title: 'SYNC, Singapore', text: 'Digital asset infrastructure inside a secure communications platform.', status: 'Announced · Sept 2026' },
+  { title: 'Cross-border payments', text: 'Settlement between two institutions, fiat on both sides.', status: 'Signed' },
+  { title: 'Cross-network conversion', text: 'Value moved from one network to another in one motion.', status: 'Delivered' },
+  { title: 'Asset tokens', text: 'For several partners in commodities.', status: 'Delivered' },
+  { title: 'Since 2017', text: 'Founded in Copenhagen.' },
+];
+---
+
+<Base
+  title="Financial infrastructure that fits what you have — Aryze"
+  description="Infrastructure for payments, digital money and settlement that fits the systems you already run. Pay by Bank is live in the UK and the EU."
+>
+  <div class="home-intro">
+    <section class="home-hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Copenhagen · since 2017</span>
+          <h1>Financial infrastructure that fits what you already have.</h1>
+          <div class="hero-foot">
+            <p class="lede">
+              Aryze builds the rails for getting paid, issuing digital money and settling across currencies and
+              networks. Pay by Bank is live in the UK and the EU.
+            </p>
+            <div class="btn-row">
+              <a class="btn btn--primary btn--lg" href="#products">See the products <span aria-hidden="true">↓</span></a>
+              <a class="hero-proof" href="/consulting">Scope it with us →</a>
+            </div>
+          </div>
+          <TrustedBy />
+        </div>
+      </div>
+    </section>
+
+    <section class="city-band" aria-hidden="true">
+      <img src="/images/hero-visual.jpg" alt="" width="1280" height="955" />
+      <LivingPhoto src="/videos/city-living-60fps.mp4" position="50% 50%" radius="0" />
+    </section>
+
+    <section class="section" id="products">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Products</span>
+          <h2>Start with what the money has to do.</h2>
+        </div>
+        <ProductGrid />
+      </div>
+    </section>
+  </div>
+
+  <section class="section section--sand">
+    <div class="container mechanism">
+      <div>
+        <span class="eyebrow">MoneyOS</span>
+        <h2>One infrastructure under every product.</h2>
+        <p class="lede">
+          Every Aryze product runs on MoneyOS, so you connect to Aryze once. Each product is scoped with us
+          and proven on your route before it goes live.
+        </p>
+        <p class="hero-footnote">
+          Aryze is a technology company, not a bank or a payment institution. Coverage is confirmed route by route.
+        </p>
+        <a href="/how-it-works" class="arrow-link">See how it works</a>
+      </div>
+      <div class="mechanism-steps">
+        {
+          mechanismSteps.map((step) => (
+            <a href={step.href}>
+              <div class="mechanism-step">
+                <span>{step.number}</span>
+                <div>
+                  <h3>
+                    {step.title} <span aria-hidden="true">→</span>
+                  </h3>
+                  <p>{step.text}</p>
+                </div>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container stays-yours">
+      <div class="stays-intro">
+        <span class="eyebrow">What doesn't change</span>
+        <h2>Nothing in your core is replaced.</h2>
+        <p>Aryze adds the new product beside the systems you already run. Your customer still deals with you.</p>
+      </div>
+      <div class="stays-diagram">
+        <RouteBankFit label="Where Aryze fits" addedLabel="Aryze infrastructure" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Who it is for</span>
+        <h2>Built for banks, payment platforms, operators, issuers and treasury teams.</h2>
+      </div>
+      <div class="audience-list">
+        {
+          solutions.map((a) => (
+            <a href={a.url}>
+              <h3>{a.name}</h3>
+              <p>{a.shortLine}</p>
+              <span class="audience-arrow" aria-hidden="true">↗</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--card proof-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Track record</span>
+        <h2>Work we can point to.</h2>
+      </div>
+      <ul class="proof-strip">
+        {
+          proof.map((p) => (
+            <li>
+              <strong>{p.title}</strong>
+              <span>{p.text}</span>
+              {p.status && <em>{p.status}</em>}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--accent">
+    <div class="container two-col consulting-band">
+      <div>
+        <h2>Still not sure what you need? Let us scope it with you.</h2>
+      </div>
+      <div>
+        <p class="lede">
+          Tell us what your customers are asking for and what you run today. We work out with you which product fits
+          — or whether one does.
+        </p>
+        <p>Start with one money flow.</p>
+        <a class="btn btn--primary btn--lg" href="/consulting">Scope it with us</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container two-col">
+      <div class="office-media">
+        <img
+          src="/images/about/hero-office.webp"
+          alt="Aryze’s Copenhagen office"
+          width="900"
+          height="600"
+          class="photo office-photo"
+          loading="lazy"
+        />
+        <LivingPhoto src="/videos/office-living-60fps.mp4" radius="var(--radius-xl)" />
+      </div>
+      <div>
+        <span class="eyebrow">The team</span>
+        <h2>Talk to the people<br />who built it.</h2>
+        <p class="lede">Bring the customer problem. We bring the engineering and operating design.</p>
+        <a href="/company" class="arrow-link">Get to know Aryze</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .home-hero {
+    padding: clamp(48px, 6vw, 88px) 0 clamp(56px, 7vw, 96px);
+  }
+
+  .section-head h2 {
+    text-wrap: balance;
+  }
+
+  .hero-grid {
+    display: block;
+  }
+
+  .hero-foot {
+    grid-template-columns: minmax(0, 30em) auto;
+    justify-content: space-between;
+    align-items: end;
+    gap: 24px 48px;
+    display: grid;
+  }
+
+  .hero-foot .lede {
+    grid-row: span 2;
+  }
+
+  .hero-copy .hero-foot .btn-row,
+  .hero-copy .hero-foot .hero-footnote {
+    margin-top: 0;
+  }
+
+  .hero-copy h1 {
+    letter-spacing: -0.055em;
+    margin: 24px 0 28px;
+    font-size: clamp(3rem, 6.6vw, 6rem);
+    line-height: 1.035;
+  }
+
+  .hero-copy h1 em {
+    color: var(--cta);
+    font-style: normal;
+  }
+
+  .hero-copy .lede {
+    max-width: 30em;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+
+  .hero-copy .btn-row {
+    gap: 18px;
+    margin-top: 30px;
+  }
+
+  .hero-proof {
+    white-space: nowrap;
+    font-size: 0.8125rem;
+  }
+
+  /* TrustedBy is a child component, so its root needs :global() to be reached from here. */
+  .hero-copy :global(.trusted) {
+    margin-top: 44px;
+  }
+
+  .hero-copy .hero-footnote,
+  .mechanism .hero-footnote {
+    font: 0.6875rem/1.8 var(--mono);
+    color: var(--muted);
+    margin-top: 28px;
+  }
+
+  .city-band {
+    background: var(--navy);
+    min-height: clamp(300px, 42vw, 560px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .city-band img {
+    object-fit: cover;
+    filter: saturate(0.9) contrast(1.04);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+  }
+
+  .city-band:after {
+    content: "";
+    background: linear-gradient(90deg, #001e2bd1, #001e2b0d 70%);
+    position: absolute;
+    inset: 0;
+  }
+
+  .mechanism {
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    display: grid;
+  }
+
+  .mechanism .lede {
+    max-width: 30em;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+
+  .mechanism-steps > a {
+    color: inherit;
+    display: block;
+  }
+
+  .mechanism-steps .mechanism-step {
+    border-top: 1px solid #001e2b25;
+    grid-template-columns: 40px 1fr;
+    gap: 14px;
+    padding: 26px 0;
+    display: grid;
+  }
+
+  .mechanism-steps .mechanism-step > span {
+    font: 0.6875rem var(--mono);
+    color: var(--cta);
+    padding-top: 5px;
+  }
+
+  .mechanism-steps h3 {
+    font-size: 1.1875rem;
+    font-weight: 500;
+  }
+
+  .mechanism-steps p {
+    max-width: 30em;
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  .audience-list > a {
+    border-top: 1px solid var(--line);
+    color: var(--navy);
+    grid-template-columns: 1.2fr 1fr 30px;
+    align-items: center;
+    gap: 24px;
+    padding: 32px 0;
+    text-decoration: none;
+    display: grid;
+  }
+
+  .audience-list > a:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .audience-list h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+  }
+
+  .audience-list p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  .audience-arrow {
+    font-size: 1.5rem;
+    transition: transform 0.2s;
+  }
+
+  .audience-list > a:hover .audience-arrow {
+    transform: translate(3px, -3px);
+  }
+
+  .office-photo {
+    aspect-ratio: 3/2;
+    object-fit: cover;
+  }
+
+  .city-band :global(.living-photo) :global(video) {
+    filter: saturate(0.9) contrast(1.04);
+  }
+
+  .office-media {
+    position: relative;
+  }
+
+  :global(html.js) .office-media > .photo ~ :global(.living-photo) {
+    transition:
+      opacity 0.55s var(--ease),
+      transform 0.55s var(--ease);
+  }
+
+  :global(html.js) .office-media > .photo.reveal:not(.is-in) ~ :global(.living-photo) {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  @media (width <= 1000px) {
+    .hero-grid {
+      gap: 32px;
+    }
+    .hero-foot {
+      grid-template-columns: 1fr;
+    }
+    .hero-foot .lede {
+      grid-row: auto;
+    }
+    .hero-copy .btn-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .mechanism {
+      gap: 40px;
+    }
+  }
+
+  @media (width <= 760px) {
+    .hero-grid,
+    .mechanism {
+      grid-template-columns: 1fr;
+    }
+    .hero-copy h1 {
+      font-size: clamp(3rem, 10vw, 4.6rem);
+    }
+    .hero-copy .btn-row {
+      flex-direction: row;
+      align-items: center;
+    }
+    .hero-copy :global(.trusted) {
+      margin-top: 28px;
+    }
+    .hero-grid {
+      gap: 40px;
+    }
+    .audience-list > a {
+      grid-template-columns: 1fr 22px;
+      gap: 8px 16px;
+      padding: 24px 0;
+    }
+    .audience-list p {
+      grid-area: 2/1;
+    }
+    .audience-arrow {
+      grid-area: 1/2;
+    }
+    .audience-list h3 {
+      font-size: 1.25rem;
+    }
+    .home-intro {
+      flex-direction: column;
+      display: flex;
+    }
+    .home-hero,
+    .hero-grid {
+      display: contents;
+    }
+    .hero-copy {
+      order: 0;
+      width: calc(100% - 48px);
+      margin-inline: auto;
+      padding-block: 48px 16px;
+    }
+    #products {
+      order: 1;
+      padding-top: 24px;
+    }
+    .city-band {
+      order: 2;
+    }
+  }
+
+  /* S4 What stays yours: today's route-selector "bank" panel layout. */
+  .stays-yours {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 80px;
+    display: grid;
+  }
+
+  .stays-intro h2 {
+    max-width: 16em;
+    font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+    font-weight: 400;
+  }
+
+  .stays-intro > p {
+    color: var(--muted);
+    max-width: 34em;
+    margin: 22px 0;
+    line-height: 1.7;
+  }
+
+  .stays-diagram {
+    min-width: 0;
+  }
+
+  /* S6 Proof: a quiet strip. */
+  /* Eight items: 4 x 2 on desktop, 2 x 4 on tablets, one column on phones, so no row is left short. */
+  .proof-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 32px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+
+  .proof-strip li {
+    border-top: 1px solid var(--line);
+    gap: 6px;
+    min-width: 0;
+    padding: 20px 0;
+    display: grid;
+    align-content: start;
+  }
+
+  .proof-strip strong {
+    color: var(--navy);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .proof-strip span {
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .proof-strip em {
+    font: 0.6875rem/1.5 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cta);
+    margin-top: 2px;
+    font-style: normal;
+  }
+
+
+  /* S7 Consulting band. */
+  .consulting-band h2 {
+    max-width: 14em;
+  }
+
+  .consulting-band p {
+    max-width: 34em;
+    line-height: 1.7;
+  }
+
+  .consulting-band .btn {
+    margin-top: 12px;
+  }
+
+  @media (width <= 900px) {
+    .stays-yours {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  @media (width <= 1100px) {
+    .proof-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width <= 560px) {
+    .proof-strip {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

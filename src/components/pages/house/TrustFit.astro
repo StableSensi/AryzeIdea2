@@ -1,0 +1,265 @@
+---
+/**
+ * Company "Who is responsible" diagram: the customer's business is the large
+ * piece; the Aryze piece (the three steps with their products and status
+ * chips, from the registry, drafts hidden) slots into its right edge with a
+ * puzzle tab. Below 34rem container width the pieces stack.
+ *
+ * Geometry: two columns 600 / 520 wide. The height follows the Aryze piece's
+ * product list, with an inset above and below it, so the list always fits; the
+ * shapes stretch to their grid areas.
+ */
+import PuzzleJoin from '../../PuzzleJoin.astro';
+import StatusChip from '../../StatusChip.astro';
+import { productGroups } from '../../../data/products';
+
+const groups = productGroups();
+
+const W = { business: 600, aryze: 520 };
+const H = { inset: 55, aryze: 330 };
+const width = W.business + W.aryze;
+const height = H.inset * 2 + H.aryze;
+
+const style =
+  `--fit-columns:${W.business}fr ${W.aryze}fr;` +
+  `--fit-key:var(--connector-radius);` +
+  `--fit-gap:var(--connector-gutter);`;
+
+const top = H.inset;
+const bottom = H.inset + H.aryze;
+const businessPath = `M0 0 L${W.business} 0 L${W.business} ${top} L${W.business} ${bottom} L${W.business} ${height} L0 ${height} Z`;
+const aryzePath = `M${W.business} ${bottom} L${W.business} ${top} L${width} ${top} L${width} ${bottom} L${W.business} ${bottom} Z`;
+---
+
+<figure class="trust-fit" style={style}>
+  <div class="trust-fit__plot">
+    <div class="trust-fit__group trust-fit__business">
+      <svg
+        viewBox={`0 0 ${W.business} ${height}`}
+        preserveAspectRatio="none"
+        class="trust-fit__shape"
+        aria-hidden="true"
+        focusable="false"><path d={businessPath}></path></svg
+      >
+      <h3>Your business</h3>
+      <ul>
+        <li>Customers &amp; brand</li>
+        <li>Accounts &amp; systems</li>
+        <li>Licences &amp; partners</li>
+      </ul>
+      <p>Unchanged.</p>
+    </div>
+    <div class="trust-fit__group trust-fit__aryze">
+      <svg
+        viewBox={`${W.business} ${top} ${W.aryze} ${H.aryze}`}
+        preserveAspectRatio="none"
+        class="trust-fit__shape"
+        aria-hidden="true"
+        focusable="false"><path d={aryzePath}></path></svg
+      >
+      <PuzzleJoin direction="left" />
+      <h3>Aryze adds</h3>
+      <div class="trust-fit__steps">
+        {
+          groups.map((g) => (
+            <div class="trust-fit__step">
+              <p class="trust-fit__step-label">{g.label}</p>
+              <ul>
+                {g.products.map((p) => (
+                  <li>
+                    <a href={p.url}>{p.name}</a>
+                    <StatusChip product={p.slug} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+  <figcaption>Only the capability you need. Not a replacement for your business.</figcaption>
+</figure>
+
+<style>
+  .trust-fit {
+    align-self: center;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    container-type: inline-size;
+  }
+
+  .trust-fit__plot {
+    --fit-inset: clamp(18px, 4.5cqi, 40px);
+    isolation: isolate;
+    grid-template-columns: var(--fit-columns);
+    grid-template-rows: var(--fit-inset) auto var(--fit-inset);
+    color: #001e2b;
+    display: grid;
+  }
+
+  .trust-fit__group {
+    --fit-fill: #e1e8e9;
+    --puzzle-join-fill: var(--fit-fill);
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+    padding: 3.5cqi;
+    font-size: clamp(1rem, 2.9cqi, 1.5rem);
+    line-height: 1.45;
+    display: flex;
+    position: relative;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: var(--fit-fill);
+    stroke: var(--bg);
+    stroke-width: var(--fit-gap);
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  :is(h3, ul, p, .trust-fit__steps) {
+    z-index: 1;
+    margin: 0;
+  }
+
+  .trust-fit__steps {
+    gap: 0.85rem;
+    display: grid;
+    position: relative;
+  }
+
+  .trust-fit__step ul {
+    gap: 0.35rem;
+  }
+
+  .trust-fit__step li {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    display: flex;
+  }
+
+  .trust-fit__step a {
+    color: inherit;
+    text-underline-offset: 3px;
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    text-decoration-color: #ffffff73;
+  }
+
+  .trust-fit__step a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .trust-fit__step-label {
+    font: 0.6875rem var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 0.35rem;
+  }
+
+  .trust-fit__business {
+    grid-area: 1/1/-1;
+    justify-content: space-between;
+    padding-inline-end: calc(var(--fit-key) + 3.5cqi);
+  }
+
+  .trust-fit__aryze {
+    --fit-fill: #007599;
+    color: #fff;
+    grid-area: 2/2;
+    justify-content: center;
+    gap: 0.625rem;
+    padding: 3cqi;
+  }
+
+  h3 {
+    color: inherit;
+    letter-spacing: 0.1em;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  ul {
+    gap: 0.45em;
+    list-style: none;
+    display: grid;
+  }
+
+  p,
+  figcaption {
+    text-wrap: pretty;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  figcaption {
+    color: var(--muted);
+    text-align: center;
+    margin-block-start: 0.875rem;
+  }
+
+  @container (width <= 34rem) {
+    .trust-fit__plot {
+      --stack-radius: var(--connector-radius);
+      --stack-gap: var(--connector-gutter);
+      gap: var(--stack-gap);
+      aspect-ratio: auto;
+      flex-direction: column;
+      display: flex;
+    }
+    svg,
+    .trust-fit__plot :global(.puzzle-join) {
+      display: none;
+    }
+    .trust-fit__group {
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+    .trust-fit__group:before {
+      content: "";
+      background: var(--fit-fill);
+      position: absolute;
+      inset: 0;
+    }
+    .trust-fit__business {
+      padding-block-end: calc(var(--stack-radius) + 1.5rem);
+    }
+    .trust-fit__business:before {
+      mask-image: radial-gradient(
+        circle at 50% calc(100% + var(--stack-gap) / 2),
+        transparent calc(var(--stack-radius) + var(--stack-gap) / 2),
+        #000 calc(var(--stack-radius) + var(--stack-gap) / 2 + 0.5px)
+      );
+    }
+    .trust-fit__aryze {
+      align-self: center;
+      width: 82%;
+      padding-inline: min(1.5rem, 5cqi);
+    }
+    .trust-fit__aryze:after {
+      content: "";
+      z-index: -1;
+      left: calc(50% - var(--stack-radius) + var(--stack-gap) / 2);
+      top: calc(-1 * var(--stack-radius));
+      width: calc(2 * var(--stack-radius) - var(--stack-gap));
+      aspect-ratio: 1;
+      background: var(--fit-fill);
+      border-radius: 50%;
+      position: absolute;
+    }
+  }
+</style>

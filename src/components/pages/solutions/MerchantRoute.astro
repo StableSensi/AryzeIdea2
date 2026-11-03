@@ -1,0 +1,118 @@
+---
+/**
+ * PSPs & Payment Platforms "From payment to record" illustrative route:
+ * navy request panel, a 2px seam with two puzzle joins (grey up at 25%,
+ * navy down at 80%), and the grey result bar.
+ */
+import PuzzleJoin from '../../PuzzleJoin.astro';
+
+const fields = ['Payment request', 'Provider approval', 'Status & exceptions', 'Settlement record'];
+---
+
+<div class="merchant-route">
+  <div class="merchant-route__body">
+    <p class="merchant-route__qualifier">ILLUSTRATIVE MERCHANT ROUTE</p>
+    <h3>From payment to record</h3>
+    <ul class="merchant-route__fields">
+      {fields.map((f) => <li>{f}</li>)}
+    </ul>
+  </div>
+  <div class="merchant-route__seam" aria-hidden="true">
+    <!-- Shared square, physical-size joins: grey UP at 25%, navy DOWN at 80%. -->
+    <span class="merchant-route__grey"><PuzzleJoin direction="up" x="25%" y="50%" /></span><span class="merchant-route__navy"><PuzzleJoin direction="down" x="80%" y="50%" /></span>
+  </div>
+  <p class="merchant-route__result">One view inside your platform</p>
+</div>
+
+<style>
+  .merchant-route {
+    --merchant-route-navy: #001e2b;
+    --merchant-route-grey: #dfe6e7;
+    --merchant-route-gutter: var(--bg, #f7f9fa);
+    width: 100%;
+    min-width: 0;
+    font-family: inherit;
+    font-weight: 400;
+    container-type: inline-size;
+  }
+  .merchant-route__body {
+    background: var(--merchant-route-navy);
+    color: var(--text-inv);
+    padding: clamp(0.75rem, 5.5cqi, 2rem) clamp(0.75rem, 5.5cqi, 2rem) 1.5rem;
+  }
+  .merchant-route__qualifier {
+    letter-spacing: 0.035em;
+    margin: 0 0 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  h3 {
+    color: inherit;
+    letter-spacing: -0.025em;
+    margin: 0 0 1rem;
+    font-size: clamp(1.5rem, 6.25cqi, 2.25rem);
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  .merchant-route__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+    list-style: none;
+    display: grid;
+    position: relative;
+  }
+  .merchant-route__fields:after {
+    content: "";
+    background: #f3f2f159;
+    width: 1px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+  }
+  li {
+    min-width: 0;
+    padding-block: 0.625rem;
+    font-weight: 400;
+  }
+  li:nth-child(-n + 2) {
+    border-bottom: 1px solid #f3f2f159;
+  }
+  .merchant-route__seam {
+    height: var(--connector-gutter);
+    background: var(--merchant-route-gutter);
+    --puzzle-join-gutter: var(--merchant-route-gutter);
+    position: relative;
+  }
+  .merchant-route__grey {
+    --puzzle-join-fill: var(--merchant-route-grey);
+  }
+  .merchant-route__navy {
+    --puzzle-join-fill: var(--merchant-route-navy);
+  }
+  .merchant-route__result {
+    background: var(--merchant-route-grey);
+    color: var(--merchant-route-navy);
+    margin: 0;
+    padding: 1.5rem clamp(0.75rem, 5.5cqi, 2rem);
+    font-size: clamp(1.125rem, 4.2cqi, 1.5rem);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  @container (width<=24rem) {
+    .merchant-route__fields {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .merchant-route__fields:after {
+      display: none;
+    }
+    li:not(:last-child) {
+      border-bottom: 1px solid #f3f2f159;
+    }
+  }
+</style>

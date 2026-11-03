@@ -1,0 +1,23 @@
+---
+/** .section-head block: eyebrow, h2 and lede paragraphs. Internal to the product sections. */
+import { paragraphs } from './types';
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  body?: string | string[];
+}
+const { eyebrow, title, body } = Astro.props;
+const ps = paragraphs(body);
+---
+
+{
+  (eyebrow || title || ps.length > 0) && (
+    <div class="section-head">
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      {title && <h2>{title}</h2>}
+      {ps.map((p) => (
+        <p class="lede">{p}</p>
+      ))}
+    </div>
+  )
+}

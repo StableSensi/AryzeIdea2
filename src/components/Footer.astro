@@ -1,0 +1,173 @@
+---
+/**
+ * Navy site footer (nav-and-footer.md S5–S7): brand block (wordmark,
+ * strapline, email, address), three link columns (Products grouped by step
+ * from the product registry with drafts hidden, Solutions from the solution
+ * registry, Company) and the legal strip.
+ */
+import Logo from './Logo.astro';
+import { productGroups } from '../data/products';
+import { solutions } from '../data/solutions';
+import { footerCompanyLinks } from '../data/site';
+
+const year = 2026;
+const groups = productGroups();
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <Logo tone="light" />
+        <p>Financial infrastructure.<br />Built around what you already have.</p>
+        <a href="mailto:info@aryze.io">info@aryze.io</a>
+        <p class="address">Bredgade 3, 2.<br />1260 Copenhagen K, Denmark</p>
+      </div>
+      <nav class="footer-cols" aria-label="Footer">
+        <div>
+          <h2>Products</h2>
+          <ul>
+            {
+              groups.map((g) => (
+                <li>
+                  <span class="footer-step">{g.label}</span>
+                  <ul class="footer-sublinks">
+                    {g.products.map((p) => (
+                      <li>
+                        <a href={p.url}>{p.name}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div>
+          <h2>Solutions</h2>
+          <ul>
+            {
+              solutions.map((l) => (
+                <li>
+                  <a href={l.url}>{l.name}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div>
+          <h2>Company</h2>
+          <ul>
+            {
+              footerCompanyLinks.map((l) => (
+                <li>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-legal">
+      <p>Aryze ApS · CVR 38895052. Danish financial technology, since 2017.</p>
+      <p>
+        Aryze supplies technology. Regulated activities require the appropriately authorised institution and an agreed
+        operating arrangement. <a href="/trust/licenses">Read the regulatory position.</a>
+      </p>
+      <span>© {year} Aryze ApS</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--navy);
+    color: var(--text-inv);
+    padding: 72px 0 32px;
+  }
+  .footer-top {
+    border-bottom: 1px solid var(--line-inv);
+    grid-template-columns: 1fr 3fr;
+    gap: 64px;
+    padding-bottom: 48px;
+    display: grid;
+  }
+  .footer-brand p {
+    color: var(--text-inv);
+    margin: 24px 0;
+    font-size: 1rem;
+  }
+  .footer-brand > a {
+    color: var(--text-inv);
+  }
+  .footer-brand .address {
+    color: var(--muted-inv);
+    font-size: 0.8125rem;
+  }
+  .footer-cols {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    display: grid;
+  }
+  .footer-cols h2 {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-inv);
+    font-size: 0.6875rem;
+    font-family: var(--mono);
+    margin-bottom: 22px;
+  }
+  .footer-cols ul {
+    list-style: none;
+  }
+  .footer-cols li {
+    margin-bottom: 12px;
+  }
+  .footer-cols a {
+    color: var(--text-inv);
+    font-size: 0.8125rem;
+  }
+  .footer-legal {
+    color: var(--muted-inv);
+    gap: 10px;
+    padding-top: 26px;
+    font-size: 0.75rem;
+    display: grid;
+  }
+  .footer-legal p {
+    max-width: 76em;
+    margin: 0;
+  }
+  .footer-legal a {
+    color: var(--text-inv);
+    text-decoration: underline;
+  }
+  .footer-cols .footer-step {
+    color: var(--muted-inv);
+    font-size: 0.8125rem;
+  }
+  .footer-cols .footer-sublinks {
+    border-left: 1px solid var(--line-inv);
+    margin-top: 12px;
+    padding-left: 12px;
+  }
+  @media (width<=1000px) {
+    .footer-top {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+  @media (width<=620px) {
+    .footer-cols {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .footer-cols > div:first-child {
+      grid-column: 1 / -1;
+    }
+    .footer {
+      padding-top: 48px;
+    }
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+/**
+ * "What's included" section: eyebrow, h2, optional lede, then the two-column
+ * .features list (bold title + muted text, optional chip and link per item).
+ */
+import SectionHead from './SectionHead.astro';
+import FeatureList from './FeatureList.astro';
+import { sectionClass, type Item, type SectionTone } from './types';
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  body?: string | string[];
+  items: Item[];
+  tone?: SectionTone;
+  id?: string;
+}
+const { eyebrow = "What's included", title, body, items, tone = 'plain', id } = Astro.props;
+---
+
+<section class={sectionClass(tone)} id={id}>
+  <div class="container">
+    <SectionHead eyebrow={eyebrow} title={title} body={body} />
+    <FeatureList items={items} />
+    <slot />
+  </div>
+</section>

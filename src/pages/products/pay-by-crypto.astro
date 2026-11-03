@@ -1,0 +1,119 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import WhoFor from '../../components/product/WhoFor.astro';
+import Steps from '../../components/product/Steps.astro';
+import NotIncluded from '../../components/product/NotIncluded.astro';
+import RunsOnMoneyOS from '../../components/product/RunsOnMoneyOS.astro';
+import CTA from '../../components/product/CTA.astro';
+import HeroStatus from '../../components/pages/products/HeroStatus.astro';
+import { getProduct } from '../../data/products';
+
+const product = getProduct('pay-by-crypto');
+const pbb = getProduct('pay-by-bank');
+---
+
+<Base
+  title="Pay by Crypto — Aryze"
+  description="Pay by Crypto is in build. Customers pay in supported digital assets, with a defined route to ordinary money for the merchant."
+>
+  <PageHero
+    tone="sand"
+    eyebrow="Products · Accept"
+    title={product.name}
+    lede={product.oneLiner ?? ''}
+    image={{ src: '/images/solutions/fintechs.webp', alt: 'A professional crossing a bridge in Copenhagen', position: '50% 46%' }}
+    video="/videos/fintechs-living-60fps.mp4"
+    videoPosition="100% 46%"
+  >
+    <HeroStatus product="pay-by-crypto" />
+  </PageHero>
+
+  <section class="section">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">A payment option in build</span>
+        <h2>Crypto-funded payments in your own checkout.</h2>
+        <p class="lede">In the design, Aryze connects the checkout and payment status. A licensed crypto-asset service provider (CASP) receives, screens, converts and settles.</p>
+        <p class="lede">In that design, the partner converts the crypto at the door, so your licence never touches a token.</p>
+      </div>
+      <div class="route-panel conversion-panel">
+        <h3>No conversion operation to build.</h3>
+      </div>
+    </div>
+  </section>
+
+  <WhoFor body="Payment platforms and iGaming operators whose customers want to pay in digital assets.">
+    <ul class="who-links">
+      <li><a class="arrow-link" href="/solutions/psps-fintechs">For payment platforms</a></li>
+      <li><a class="arrow-link" href="/solutions/igaming">For iGaming operators</a></li>
+    </ul>
+  </WhoFor>
+
+  <Steps
+    eyebrow="The flow in build"
+    title="Clear roles from checkout to settlement."
+    tone="plain"
+    steps={[
+      { title: 'Choose', text: 'Select asset and network.' },
+      { title: 'Screen', text: 'The CASP checks and receives.' },
+      { title: 'Settle', text: 'Convert to the agreed currency.' },
+      { title: 'Reconcile', text: 'Update order and reporting.' },
+    ]}
+    note="This is the flow being built, not a live merchant service."
+  />
+
+  <NotIncluded
+    items={[
+      { title: 'Not live', text: `${product.name} is in build and not available yet.` },
+      { title: 'Unpriced until live', text: 'There is no price for crypto acceptance until it goes live.' },
+      {
+        title: 'Assets and networks are set per route',
+        text: 'So are the provider relationship, conversion, failed payments, refunds and settlement risk.',
+      },
+    ]}
+  >
+    <p class="route-note">Receipt of a digital asset and final merchant settlement are different events.</p>
+  </NotIncluded>
+
+  <section class="section section--sand">
+    <div class="container two-col need-bank">
+      <div>
+        <h2>Need bank payments now?</h2>
+        <a class="arrow-link" href={pbb.url}>Explore {pbb.name}</a>
+      </div>
+      <div class="need-bank__card">
+        <ProductCard product="pay-by-bank" />
+      </div>
+    </div>
+  </section>
+
+  <RunsOnMoneyOS
+    product="pay-by-crypto"
+    tone="card"
+    body={`${product.name} is being built on MoneyOS, the infrastructure under every Aryze product.`}
+  />
+
+  <CTA
+    title="Define the crypto payment you need."
+    text="Bring the payer, the asset and the currency you want to settle in."
+  />
+</Base>
+
+<style>
+  .conversion-panel h3 {
+    margin: 0;
+  }
+  .who-links {
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+  }
+  .need-bank {
+    align-items: center;
+  }
+</style>

@@ -1,0 +1,325 @@
+---
+/**
+ * Sticky site header: logo, main navigation and the primary CTA
+ * (nav-and-footer.md S1–S4).
+ *
+ *   Products ▾   grouped Accept / Issue / Convert & settle from the product
+ *                registry (name, short description, StatusChip), drafts
+ *                excluded, then the "All products run on MoneyOS" strip
+ *   Solutions ▾  the five solution pages from the solution registry
+ *   Consulting   plain link
+ *   Company ▾    About, Regulation, Backing & redemption, Blog, Contact
+ *   Talk to Aryze button
+ *
+ * The whole nav sits inside <details id="main-menu">. Above 1000px the menu is
+ * forced open and its "Menu" summary hidden; at or below 1000px it becomes the
+ * mobile menu. Without JS the menu stays closed behind its visible summary.
+ * Behaviour (one dropdown at a time, outside click, focus-out, Escape) lives in
+ * src/scripts/main-menu.ts.
+ *
+ * aria-current="page" marks the link for the current path.
+ */
+import Logo from './Logo.astro';
+import StatusChip from './StatusChip.astro';
+import { normalizePath } from '../scripts/paths';
+import { productGroups } from '../data/products';
+import { solutions } from '../data/solutions';
+import { companyLinks } from '../data/site';
+
+const current = normalizePath(Astro.url.pathname);
+
+function currentFor(href: string): 'page' | undefined {
+  return current === href ? 'page' : undefined;
+}
+
+const groups = productGroups();
+
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <Logo tone="dark" />
+    <details class="main-menu" id="main-menu">
+      <summary class="menu-toggle">Menu <span aria-hidden="true">＋</span></summary>
+      <nav aria-label="Main" class="nav">
+        <details class="nav-dropdown nav-dropdown--wide">
+          <summary>Products</summary>
+          <div class="nav-panel nav-panel--products">
+            <div class="nav-product-groups">
+              {
+                groups.map((g) => (
+                  <div class="nav-product-group">
+                    <strong class="nav-step-label">{g.label}</strong>
+                    {g.products.map((p) => (
+                      <a href={p.url} aria-current={currentFor(p.url)} class="nav-product">
+                        <strong>{p.name}</strong>{' '}
+                        {p.navDescription && <small>{p.navDescription}</small>}{' '}
+                        <span class="nav-product-chip">
+                          <StatusChip product={p.slug} />
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                ))
+              }
+            </div>
+            <a href="/how-it-works" class="nav-moneyos" aria-current={currentFor('/how-it-works')}>
+              <span>All products run on MoneyOS</span>{' '}
+              <span class="nav-moneyos-link">How it works <span aria-hidden="true">→</span></span>
+            </a>
+          </div>
+        </details>
+        <details class="nav-dropdown">
+          <summary>Solutions</summary>
+          <div class="nav-panel">
+            {solutions.map((l) => <a href={l.url} aria-current={currentFor(l.url)}>{l.name}</a>)}
+          </div>
+        </details>
+        <a href="/consulting" aria-current={currentFor('/consulting')}>Consulting</a>
+        <details class="nav-dropdown nav-dropdown--end">
+          <summary>Company</summary>
+          <div class="nav-panel">
+            {companyLinks.map((l) => <a href={l.href} aria-current={currentFor(l.href)}>{l.label}</a>)}
+          </div>
+        </details>
+        <a href="/contact" class="btn btn--primary">Talk to Aryze <span aria-hidden="true">↗</span></a>
+      </nav>
+    </details>
+    <script is:inline data-astro-rerun>
+      /* Pre-paint, on first load and every ClientRouter swap: mark the menu enhanced (hides the wide-screen summary) and set its viewport state, open above 1000px and closed at or below. Without JS the menu stays closed behind its visible native Menu summary, so a fresh page never opens covering content. */
+      {
+        const m = document.getElementById('main-menu');
+        m.dataset.enhanced = '';
+        m.open = !matchMedia('(max-width: 1000px)').matches;
+      }
+    </script>
+  </div>
+</header>
+
+<script>
+  import { initMainMenu } from '../scripts/main-menu';
+  document.addEventListener('astro:page-load', initMainMenu);
+  initMainMenu();
+</script>
+
+<style>
+  .site-header {
+    z-index: 50;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line-muted);
+    background: #f7f9faf5;
+    position: sticky;
+    top: 0;
+  }
+  .bar {
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    min-height: 80px;
+    display: flex;
+  }
+  .main-menu {
+    margin-left: auto;
+  }
+  .menu-toggle {
+    cursor: pointer;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    font-size: 0.875rem;
+    list-style: none;
+    display: flex;
+  }
+  .menu-toggle::-webkit-details-marker {
+    display: none;
+  }
+  .main-menu[open] > .menu-toggle span {
+    transform: rotate(45deg);
+  }
+  @media not all and (width<=1000px) {
+    .main-menu[data-enhanced] > .menu-toggle {
+      display: none;
+    }
+  }
+  .nav {
+    align-items: center;
+    gap: 20px;
+    display: flex;
+  }
+  .nav > a:not(.btn),
+  .nav-dropdown > summary {
+    color: var(--navy);
+    cursor: pointer;
+    padding: 12px 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    list-style: none;
+  }
+  .nav-dropdown > summary::-webkit-details-marker {
+    display: none;
+  }
+  .nav-dropdown > summary:after {
+    content: "⌄";
+    color: var(--cta);
+    margin-left: 8px;
+  }
+  .nav-dropdown {
+    position: relative;
+  }
+  .nav-dropdown[open] > summary {
+    color: var(--cta);
+  }
+  .nav-panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    width: 320px;
+    max-width: calc(100vw - 48px);
+    padding: 12px;
+    position: absolute;
+    top: calc(100% + 12px);
+    left: -20px;
+    box-shadow: 0 16px 40px #001e2b14;
+  }
+  .nav-panel a {
+    color: var(--navy);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    display: block;
+  }
+  .nav-panel a:hover {
+    background: var(--accent-bg);
+  }
+  .nav-panel strong {
+    font-weight: 500;
+  }
+  .nav-panel small {
+    color: var(--muted);
+    margin-top: 3px;
+    font-size: 0.8rem;
+    display: block;
+  }
+  .nav [aria-current="page"],
+  .nav [aria-current="true"] {
+    color: var(--cta);
+    text-underline-offset: 5px;
+    text-decoration: underline;
+  }
+  .nav .btn {
+    gap: 18px;
+    font-size: 0.8125rem;
+  }
+  @media not all and (width<=1000px) {
+    .nav {
+      position: relative;
+    }
+    .nav-dropdown--wide {
+      position: static;
+    }
+    /* The last dropdown opens leftwards so it stays inside the viewport. */
+    .nav-dropdown--end .nav-panel {
+      left: auto;
+      right: -20px;
+    }
+    .nav-panel--products {
+      width: min(760px, calc(100vw - 48px));
+      left: auto;
+      right: 0;
+    }
+  }
+  .nav-product-groups {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px 8px;
+    display: grid;
+  }
+  .nav-step-label {
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 12px 4px;
+    font-size: 0.75rem;
+    display: block;
+  }
+  .nav-panel .nav-product {
+    padding: 10px 12px;
+  }
+  .nav .nav-product[aria-current="page"] {
+    text-decoration: none;
+  }
+  .nav .nav-product[aria-current="page"] strong {
+    text-underline-offset: 5px;
+    text-decoration: underline;
+  }
+  .nav-product-chip {
+    margin-top: 8px;
+    display: block;
+  }
+  .nav-panel .nav-moneyos {
+    border-top: 1px solid var(--line-muted);
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px 16px;
+    margin-top: 8px;
+    padding: 16px 12px 12px;
+    font-size: 0.875rem;
+    display: flex;
+  }
+  .nav-moneyos-link {
+    color: var(--cta);
+    font-weight: 500;
+  }
+  @media (width<=1000px) {
+    .bar {
+      align-items: center;
+      min-height: 72px;
+      position: relative;
+    }
+    .main-menu {
+      margin-left: auto;
+    }
+    .nav {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-top: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      max-height: calc(100dvh - 72px);
+      padding: 20px 24px 28px;
+      display: flex;
+      position: absolute;
+      top: 72px;
+      left: 0;
+      right: 0;
+      overflow: auto;
+      box-shadow: 0 16px 24px #001e2b12;
+    }
+    .nav-dropdown {
+      position: static;
+    }
+    .nav-panel {
+      width: auto;
+      max-width: none;
+      box-shadow: none;
+      background: var(--card);
+      border: 0;
+      margin: 0 0 8px;
+      padding: 4px;
+      position: static;
+    }
+    .nav-dropdown > summary,
+    .nav > a:not(.btn) {
+      padding: 14px 0;
+    }
+    .nav .btn {
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+    .nav-product-groups {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

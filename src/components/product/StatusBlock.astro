@@ -1,0 +1,55 @@
+---
+/**
+ * Status section: the product's StatusChip and its §8.2 status line from the
+ * registry, in a .route-panel, plus optional extra paragraphs. The status
+ * line can be overridden only where the copy file prints a different one.
+ * For a draft product without approved status, the chip and line are omitted.
+ */
+import StatusChip from '../StatusChip.astro';
+import { getProduct, type ProductSlug } from '../../data/products';
+import { paragraphs, sectionClass, type SectionTone } from './types';
+
+interface Props {
+  product: ProductSlug;
+  eyebrow?: string;
+  title?: string;
+  body?: string | string[];
+  statusLine?: string;
+  tone?: SectionTone;
+  id?: string;
+}
+const { product, eyebrow = 'Status', title, body, tone = 'plain', id } = Astro.props;
+const p = getProduct(product);
+const statusLine = Astro.props.statusLine ?? p.statusLine;
+---
+
+<section class={sectionClass(tone)} id={id}>
+  <div class="container">
+    <div class="route-panel status-block">
+      <span class="eyebrow">{eyebrow}</span>
+      {title && <h2>{title}</h2>}
+      <div class="status-block__chip"><StatusChip product={p.slug} /></div>
+      {statusLine && <p class="status-block__line">{statusLine}</p>}
+      {paragraphs(body).map((t) => <p>{t}</p>)}
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .status-block h2 {
+    margin-bottom: 16px;
+  }
+  .status-block__chip {
+    margin-bottom: 12px;
+  }
+  .status-block__line {
+    color: var(--navy);
+    max-width: 46em;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  .status-block p {
+    max-width: 46em;
+  }
+</style>

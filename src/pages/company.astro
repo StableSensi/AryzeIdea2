@@ -1,0 +1,212 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaPanel from '../components/CtaPanel.astro';
+import TrustFit from '../components/pages/house/TrustFit.astro';
+
+const evidence = [
+  {
+    href: '/trust/licenses',
+    title: 'Regulation',
+    text: 'Who is licensed for what, and what Aryze is.',
+    link: 'Regulatory status',
+  },
+  {
+    href: '/trust/reserves',
+    title: 'Digital cash backing',
+    text: 'What stands behind issued money, and how it is checked.',
+    link: 'Backing and redemption',
+  },
+  {
+    href: '/how-it-works#evidence',
+    title: 'Working technology',
+    text: 'A connected route, recorded end to end.',
+    link: 'Inspect the evidence',
+  },
+];
+---
+
+<Base
+  title="Company — Aryze"
+  description="Aryze is a Danish technology company, founded in Copenhagen in 2017. We build the infrastructure other businesses use to do more with money."
+>
+  <PageHero
+    tone="sand"
+    eyebrow="Company & trust · Copenhagen, Denmark"
+    title={'Built in Copenhagen\nsince 2017.'}
+    lede="Aryze makes payment and settlement technology for banks, payment platforms, operators and issuers."
+    image={{ src: '/images/about/hero-office.webp', alt: 'The Aryze office in Copenhagen', position: '50% 54%' }}
+    video="/videos/office-living-60fps.mp4"
+  />
+
+  <section class="section">
+    <div class="container company-story">
+      <div>
+        <span class="eyebrow">The idea behind Aryze</span>
+        <h2>The question stayed.<br />The approach evolved.</h2>
+      </div>
+      <div>
+        <p class="lede">How could the money people already use become easier to work with?</p>
+        <p>
+          We began with digital cash, making familiar currencies programmable. The work grew from creating our own
+          digital money to helping other businesses build with it.
+        </p>
+        <p>One idea runs through it. The most useful applications need not come from us.</p>
+        <a href="/how-it-works" class="arrow-link">See the engineering</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sand">
+    <div class="container company-story">
+      <div>
+        <span class="eyebrow">How we work</span>
+        <h2>Your customers’ needs.<br />Our starting point.</h2>
+      </div>
+      <div>
+        <p class="lede">Tell us what your customers need to do and what gets in the way.</p>
+        <p>
+          We agree with you what the first version must do and what counts as a good result. We build it, you inspect it, and then you decide what happens next.
+        </p>
+        <a href="/consulting" class="arrow-link">Discuss paid scoping</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="trust">
+    <div class="container two-col trust-keep">
+      <div>
+        <span class="eyebrow">Who is responsible</span>
+        <h2>Aryze is a technology company, not a bank.</h2>
+        <p class="lede">
+          Regulated steps are carried out by you or the authorised partner you choose. Aryze builds and runs the technology.
+        </p>
+        <a class="arrow-link" href="/trust/licenses">Read the regulatory status</a>
+      </div>
+      <TrustFit />
+    </div>
+  </section>
+
+  <section class="section section--card">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">See for yourself</span>
+        <h2>Check the evidence and its limits.</h2>
+      </div>
+      <div class="route-grid">
+        {
+          evidence.map((e) => (
+            <a class="route-panel" href={e.href}>
+              <h3>{e.title}</h3>
+              <p>{e.text}</p>
+              <span class="arrow-link">{e.link}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--accent">
+    <div class="container two-col">
+      <div>
+        <span class="eyebrow">Security and operations</span>
+        <h2>Look inside before you connect.</h2>
+      </div>
+      <p class="lede">
+        We take your team through how Aryze connects to your systems — the architecture, permissions, data flows and what
+        happens when something fails. Security material is shared under NDA where available.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container company-story">
+      <div>
+        <span class="eyebrow">Find us</span>
+        <h2>Real people.<br />Reachable in Copenhagen.</h2>
+        <a href="mailto:info@aryze.io" class="arrow-link">info@aryze.io</a>
+      </div>
+      <dl class="company-facts">
+        <div>
+          <dt>Company</dt>
+          <dd>Aryze ApS</dd>
+        </div>
+        <div>
+          <dt>Founded</dt>
+          <dd>2017, Copenhagen</dd>
+        </div>
+        <div>
+          <dt>Registration</dt>
+          <dd>CVR 38895052</dd>
+        </div>
+        <div>
+          <dt>Address</dt>
+          <dd>Bredgade 3, 2.<br />1260 Copenhagen K, Denmark</dd>
+        </div>
+        <div>
+          <dt>Regulatory position</dt>
+          <dd>Danish technology company.<br /><a href="/trust/licenses">How regulated activities are delivered →</a></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <CtaPanel
+    title="Bring us the customer need."
+    text="We work out with you whether Aryze fits and where to start."
+    secondary={{ label: 'How the pieces fit', href: '/how-it-works' }}
+  />
+</Base>
+
+<style>
+  .company-story {
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    display: grid;
+  }
+
+  .company-story p {
+    line-height: 1.7;
+  }
+
+  .company-facts {
+    margin: 0;
+  }
+
+  .company-facts > div {
+    border-top: 1px solid var(--line);
+    grid-template-columns: 120px 1fr;
+    gap: 24px;
+    padding: 20px 0;
+    display: grid;
+  }
+
+  .company-facts dt {
+    font: 0.6875rem var(--mono);
+    color: var(--muted);
+    padding-top: 3px;
+  }
+
+  .company-facts dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  @media (width <= 800px) {
+    .company-story {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .company-facts > div {
+      grid-template-columns: 100px 1fr;
+      gap: 16px;
+    }
+  }
+
+  /* Keeps the literal line break in "Built in Copenhagen\nsince 2017." */
+  :global(.page-hero h1) {
+    white-space: pre-line;
+  }
+</style>

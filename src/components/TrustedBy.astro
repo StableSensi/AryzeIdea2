@@ -1,0 +1,98 @@
+---
+/**
+ * "Trusted by" logo row: Mastercard first, then Grant Thornton and softstack,
+ * as in the NFW brochure. The marks are used as supplied in
+ * Brand/Partner-Marks, never recoloured or cropped; each gets its own height
+ * so the three read at the same optical size.
+ */
+type Logo = 'mastercard' | 'grant-thornton' | 'softstack';
+
+interface Props {
+  /** Limit to these logos, in this order. Default: all three. */
+  only?: Logo[];
+  label?: string;
+}
+
+const all: { id: Logo; src: string; alt: string; width: number; height: number }[] = [
+  { id: 'mastercard', src: '/images/partners/mastercard.png', alt: 'Mastercard', width: 814, height: 230 },
+  { id: 'grant-thornton', src: '/images/partners/grant-thornton.png', alt: 'Grant Thornton', width: 680, height: 230 },
+  { id: 'softstack', src: '/images/partners/softstack.png', alt: 'softstack', width: 382, height: 63 },
+];
+
+const { only, label = 'Trusted by' } = Astro.props;
+const logos = only ? only.map((id) => all.find((l) => l.id === id)!) : all;
+---
+
+<div class="trusted">
+  <span class="trusted__label">{label}</span>
+  <ul class="trusted__logos">
+    {
+      logos.map((l) => (
+        <li class={`trusted__logo trusted__logo--${l.id}`}>
+          <img src={l.src} alt={l.alt} width={l.width} height={l.height} loading="lazy" decoding="async" />
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .trusted {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 48px;
+    padding: 18px 0;
+    display: flex;
+  }
+
+  .trusted__label {
+    font: 0.6875rem var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .trusted__logos {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 44px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+  }
+
+  .trusted__logo img {
+    width: auto;
+    display: block;
+  }
+
+  .trusted__logo--mastercard img {
+    height: 50px;
+  }
+
+  .trusted__logo--grant-thornton img {
+    height: 56px;
+  }
+
+  .trusted__logo--softstack img {
+    height: 22px;
+  }
+
+  @media (width <= 640px) {
+    .trusted__logos {
+      gap: 4px 28px;
+    }
+    .trusted__logo--mastercard img {
+      height: 42px;
+    }
+    .trusted__logo--grant-thornton img {
+      height: 46px;
+    }
+    .trusted__logo--softstack img {
+      height: 18px;
+    }
+  }
+</style>
